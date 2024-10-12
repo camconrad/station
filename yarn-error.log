@@ -1,0 +1,56 @@
+Arguments: 
+  /Users/cameron/.nvm/versions/node/v18.17.0/bin/node /usr/local/bin/yarn add react-beautiful-dnd
+
+PATH: 
+  /Users/cameron/.nvm/versions/node/v18.17.0/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/cameron/.nvm/versions/node/v18.17.0/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  18.17.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  SyntaxError: /Users/cameron/Desktop/code/station_dapp/package.json: Unexpected string in JSON at position 190
+      at JSON.parse (<anonymous>)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "station_dapp",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start"
+    }
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "autoprefixer": "^10.4.20",
+      "next": "^14.2.15",
+      "postcss": "^8.4.47",
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "tailwindcss": "^3.4.13"
+    },
+    "devDependencies": {
+      "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+      "hardhat": "^2.22.13"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
