@@ -2,9 +2,9 @@ import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { useAccount, useDisconnect, useNetwork } from 'wagmi'
 import { useWeb3Modal } from '@web3modal/react'
-import Popover from '@/components/common/Popover'
-import HoverIndicator from '@/components/common/HoverIndicator'
-import { shortenAddress } from '@/utils/helpers'
+import Popover from '../components/common/Popover'
+import HoverIndicator from '../components/common/HoverIndicator'
+import { shortenAddress } from '../utils/helpers'
 import { FiLogOut } from 'react-icons/fi'
 
 export const Header = () => {
@@ -20,8 +20,8 @@ export const Header = () => {
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 z-10 bg-white dark:bg-black shadow">
-      <div className="container mx-auto flex justify-between items-center p-4">
+    <header className="fixed inset-x-0 top-0 z-10 bg-white shadow dark:bg-black">
+      <div className="container flex items-center justify-between p-4 mx-auto">
         <Link href="/" className="flex items-center">
           {/* Logo for Station */}
           <img src="/logo-placeholder.png" alt="Station" className="h-8" />
@@ -43,16 +43,16 @@ export const Header = () => {
                 </HoverIndicator>
               }
             >
-              <div className="cursor-pointer px-4 py-2 border border-purple-500 rounded-full text-purple-500">
+              <div className="px-4 py-2 text-purple-500 border border-purple-500 rounded-full cursor-pointer">
                 {shortenAddress(address)}
               </div>
             </Popover>
           ) : (
             <button
-              className="px-4 py-2 border border-purple-500 rounded-full text-purple-500"
+              className="px-4 py-2 text-purple-500 border border-purple-500 rounded-full"
               onClick={() => open()}
             >
-              Connect Wallet
+              Connect
             </button>
           )}
         </div>
