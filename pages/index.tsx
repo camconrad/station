@@ -76,7 +76,7 @@ export default function Home() {
     <>
       <Header />
 
-      <div className="mt-16 container p-4 mx-auto max-w-[800px]">
+      <div className="mt-16 container pt-4 pb-4 mx-auto max-w-[800px]">
         {/* <h1 className="mb-4 text-2xl font-bold">Board</h1> */}
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-3 gap-4">

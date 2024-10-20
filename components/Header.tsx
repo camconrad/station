@@ -23,8 +23,7 @@ export const Header = () => {
     <header className="fixed inset-x-0 top-0 z-10 bg-white dark:bg-black mx-auto max-w-[800px]">
       <div className="container flex items-center justify-between pt-4 pb-4 mx-auto">
         <Link href="/" className="flex items-center">
-          {/* Logo for Station */}
-          {/* <img src="/logo-placeholder.png" alt="Station" className="h-8" /> */}
+          <img src="https://cdn.prod.website-files.com/671597a7dd56e19ff494a076/67159857e034eba568b415ae_station.png" alt="Station" className="h-6" />
           <h2 className="ml-2 text-xl font-bold">Station</h2>
         </Link>
         
