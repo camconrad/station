@@ -1,35 +1,45 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { WagmiConfig, configureChains, createClient } from 'wagmi'
+import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { mainnet, polygon, optimism, arbitrum } from 'wagmi/chains'
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 
-// Define your chains
+// Define the chains
 const chains = [mainnet, polygon, optimism, arbitrum]
+const projectId = '02a231b2406ed316c861abefc95c5e59'
 
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || 'your_project_id'
-
-const { provider } = configureChains(chains, [
-  jsonRpcProvider({
-    rpc: (chain) => ({
-      http: `https://rpc.ankr.com/${chain.network}`,
-    }),
-  }),
+// Configure chains and use custom Arbitrum RPC
+const { publicClient } = configureChains(chains, [
+  w3mProvider({ projectId }),
+  {
+    rpc: (chain) => {
+      if (chain.id === arbitrum.id) {
+        return { http: 'https://arb1.arbitrum.io/rpc' }
+      }
+      return null
+    },
+  },
 ])
 
-// Create the Wagmi client
-const client = createClient({
+// Create Wagmi configuration
+const wagmiConfig = createConfig({
   autoConnect: true,
-  provider,
+  connectors: w3mConnectors({ projectId, chains }),
+  publicClient,
 })
+
+// Create EthereumClient for Web3Modal
+const ethereumClient = new EthereumClient(wagmiConfig, chains)
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig client={client}>
-      <Component {...pageProps} />
-      <Web3Modal projectId={projectId} />
-    </WagmiConfig>
+    <>
+      <WagmiConfig config={wagmiConfig}>
+        <Component {...pageProps} />
+      </WagmiConfig>
+      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+    </>
   )
 }
 
