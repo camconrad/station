@@ -10,7 +10,7 @@ const persistConfig = {
   key: 'root',
   storage,
   whitelist: ['auth', 'theme', 'layout'],
-  blacklist: [usdPriceReducer.name],
+  // blacklist: [usdPriceReducer.name],
 }
 
 const persistedReducer = persistReducer(persistConfig, reducer)
