@@ -42,6 +42,7 @@
     "wagmi": "^1.4.13"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@types/react-beautiful-dnd": "^13.1.8",
     "hardhat": "^2.22.13"
