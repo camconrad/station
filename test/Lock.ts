@@ -1,12 +1,10 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import { loadFixture, ethers } from "hardhat";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
-import hre from "hardhat";
 
-// Helper function to increase time
 async function increaseTime(seconds: number) {
-  await hre.network.provider.send("evm_increaseTime", [seconds]);
-  await hre.network.provider.send("evm_mine");
+  await ethers.provider.send("evm_increaseTime", [seconds]);
+  await ethers.provider.send("evm_mine");
 }
 
 describe("Lock", function () {
@@ -15,11 +13,12 @@ describe("Lock", function () {
     const ONE_GWEI = 1_000_000_000;
 
     const lockedAmount = ONE_GWEI;
-    const unlockTime = (await hre.ethers.provider.getBlock("latest")).timestamp + ONE_YEAR_IN_SECS;
+    const latestBlock = await ethers.provider.getBlock("latest");
+    const unlockTime = latestBlock.timestamp + ONE_YEAR_IN_SECS;
 
-    const [owner, otherAccount] = await hre.ethers.getSigners();
+    const [owner, otherAccount] = await ethers.getSigners();
 
-    const Lock = await hre.ethers.getContractFactory("Lock");
+    const Lock = await ethers.getContractFactory("Lock");
     const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
 
     return { lock, unlockTime, lockedAmount, owner, otherAccount };
@@ -41,12 +40,12 @@ describe("Lock", function () {
     it("Should receive and store the funds to lock", async function () {
       const { lock, lockedAmount } = await loadFixture(deployOneYearLockFixture);
 
-      expect(await hre.ethers.provider.getBalance(lock.address)).to.equal(lockedAmount);
+      expect(await ethers.provider.getBalance(lock.address)).to.equal(lockedAmount);
     });
 
     it("Should fail if the unlockTime is not in the future", async function () {
-      const latestTime = (await hre.ethers.provider.getBlock("latest")).timestamp;
-      const Lock = await hre.ethers.getContractFactory("Lock");
+      const latestTime = (await ethers.provider.getBlock("latest")).timestamp;
+      const Lock = await ethers.getContractFactory("Lock");
       await expect(Lock.deploy(latestTime, { value: 1 })).to.be.revertedWith(
         "Unlock time should be in the future"
       );
@@ -64,7 +63,7 @@ describe("Lock", function () {
       it("Should revert with the right error if called from another account", async function () {
         const { lock, unlockTime, otherAccount } = await loadFixture(deployOneYearLockFixture);
 
-        await increaseTime(unlockTime - (await hre.ethers.provider.getBlock("latest")).timestamp);
+        await increaseTime(unlockTime - (await ethers.provider.getBlock("latest")).timestamp);
 
         await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWith(
           "You aren't the owner"
@@ -74,7 +73,7 @@ describe("Lock", function () {
       it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
         const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
 
-        await increaseTime(unlockTime - (await hre.ethers.provider.getBlock("latest")).timestamp);
+        await increaseTime(unlockTime - (await ethers.provider.getBlock("latest")).timestamp);
 
         await expect(lock.withdraw()).not.to.be.reverted;
       });
@@ -84,7 +83,7 @@ describe("Lock", function () {
       it("Should emit an event on withdrawals", async function () {
         const { lock, unlockTime, lockedAmount } = await loadFixture(deployOneYearLockFixture);
 
-        await increaseTime(unlockTime - (await hre.ethers.provider.getBlock("latest")).timestamp);
+        await increaseTime(unlockTime - (await ethers.provider.getBlock("latest")).timestamp);
 
         await expect(lock.withdraw())
           .to.emit(lock, "Withdrawal")
@@ -96,7 +95,7 @@ describe("Lock", function () {
       it("Should transfer the funds to the owner", async function () {
         const { lock, unlockTime, lockedAmount, owner } = await loadFixture(deployOneYearLockFixture);
 
-        await increaseTime(unlockTime - (await hre.ethers.provider.getBlock("latest")).timestamp);
+        await increaseTime(unlockTime - (await ethers.provider.getBlock("latest")).timestamp);
 
         await expect(lock.withdraw()).to.changeEtherBalances(
           [owner, lock],
