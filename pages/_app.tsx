@@ -2,27 +2,35 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { mainnet, polygon, optimism, arbitrum } from 'wagmi/chains'
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
+import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc'
+import { EthereumClient, w3mConnectors } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 
-// Define the chains
+// Define chains
 const chains = [mainnet, polygon, optimism, arbitrum]
 const projectId = '02a231b2406ed316c861abefc95c5e59'
 
-// Configure chains and use custom Arbitrum RPC
+// Configure chains with jsonRpcProvider, adding RPC URLs for all chains
 const { publicClient } = configureChains(chains, [
-  w3mProvider({ projectId }),
-  {
+  jsonRpcProvider({
     rpc: (chain) => {
-      if (chain.id === arbitrum.id) {
-        return { http: 'https://arb1.arbitrum.io/rpc' }
+      switch (chain.id) {
+        case mainnet.id:
+          return { http: 'https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID' }
+        case polygon.id:
+          return { http: 'https://polygon-rpc.com' }
+        case optimism.id:
+          return { http: 'https://mainnet.optimism.io' }
+        case arbitrum.id:
+          return { http: 'https://arb1.arbitrum.io/rpc' }
+        default:
+          return null
       }
-      return null
     },
-  },
+  }),
 ])
 
-// Create Wagmi configuration
+// Create Wagmi config
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: w3mConnectors({ projectId, chains }),
