@@ -6,7 +6,7 @@
     "noImplicitAny": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "target": "ES2020",
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
@@ -15,7 +15,7 @@
       "*": ["node_modules/*"],
       "@/*": ["./*"]
     },
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "dom.iterable", "es2020"], 
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
