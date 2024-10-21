@@ -1,5 +1,5 @@
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { FiFileText } from 'react-icons/fi'
 import Header from '../components/Header'
 
@@ -24,6 +24,18 @@ export default function Home() {
   const [tasks, setTasks] = useState<TasksState>(initialTasks)
   const [newTask, setNewTask] = useState({ todo: '', doing: '', done: '' })
   const [isAdding, setIsAdding] = useState({ todo: false, doing: false, done: false })
+
+  const inputRefs = {
+    todo: useRef<HTMLInputElement>(null),
+    doing: useRef<HTMLInputElement>(null),
+    done: useRef<HTMLInputElement>(null),
+  }
+
+  useEffect(() => {
+    if (isAdding.todo && inputRefs.todo.current) inputRefs.todo.current.focus()
+    if (isAdding.doing && inputRefs.doing.current) inputRefs.doing.current.focus()
+    if (isAdding.done && inputRefs.done.current) inputRefs.done.current.focus()
+  }, [isAdding])
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result
@@ -77,7 +89,6 @@ export default function Home() {
       <Header />
 
       <div className="mt-16 container pt-4 pb-4 mx-auto max-w-[800px]">
-        {/* <h1 className="mb-4 text-2xl font-bold">Board</h1> */}
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-3 gap-4">
             {['To Do', 'Doing', 'Done'].map((columnTitle, index) => {
@@ -118,12 +129,13 @@ export default function Home() {
                         {provided.placeholder}
 
                         {isAdding[columnId] ? (
-                          <div className="flex items-center p-2 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef]">
+                          <div className="flex items-center p-2 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef] h-[40px]">
                             <FiFileText className="mr-2 text-gray-500" size={24} />
                             <input
                               type="text"
+                              ref={inputRefs[columnId]}
                               placeholder="Type a name..."
-                              className="w-full px-2 py-1 border-none outline-none"
+                              className="w-full h-full px-2 py-1 overflow-hidden border-none outline-none"
                               value={newTask[columnId]}
                               onChange={(e) => setNewTask({ ...newTask, [columnId]: e.target.value })}
                               onBlur={() => handleAddTask(columnId)}
