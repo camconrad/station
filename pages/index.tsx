@@ -103,7 +103,7 @@ export default function Home() {
                       <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className="p-4 rounded-lg shadow min-h-[300px]"
+                        className="h-auto"
                       >
                         {tasks[columnId].map((task, taskIndex) => (
                           <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
@@ -112,7 +112,7 @@ export default function Home() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="group flex items-center justify-between p-2 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef]"
+                                className="group flex items-center justify-between pt-2 pb-2 p-3 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef]"
                               >
                                 <span>{task.content}</span>
                                 <button
@@ -130,7 +130,7 @@ export default function Home() {
 
                         {isAdding[columnId] ? (
                           <div className="flex items-center p-2 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef] h-[40px]">
-                            <FiFileText className="mr-2 text-gray-500" size={24} />
+                            <FiFileText className="mr-1 text-gray-500" size={22} />
                             <input
                               type="text"
                               ref={inputRefs[columnId]}

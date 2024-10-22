@@ -9,6 +9,21 @@
  */
 self["webpackHotUpdate_N_E"]("pages/index",{
 
+/***/ "__barrel_optimize__?names=FiFileText!=!./node_modules/react-icons/fi/index.mjs":
+/*!**************************************************************************************!*\
+  !*** __barrel_optimize__?names=FiFileText!=!./node_modules/react-icons/fi/index.mjs ***!
+  \**************************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Users_cameron_Desktop_code_station_dapp_node_modules_react_icons_fi_index_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/react-icons/fi/index.mjs */ "./node_modules/react-icons/fi/index.mjs");
+/* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Users_cameron_Desktop_code_station_dapp_node_modules_react_icons_fi_index_mjs__WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== "default") __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = function(key) { return _Users_cameron_Desktop_code_station_dapp_node_modules_react_icons_fi_index_mjs__WEBPACK_IMPORTED_MODULE_0__[key]; }.bind(0, __WEBPACK_IMPORT_KEY__)
+/* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
+
+
+/***/ }),
+
 /***/ "./pages/index.tsx":
 /*!*************************!*\
   !*** ./pages/index.tsx ***!
