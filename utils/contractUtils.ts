@@ -1,11 +1,11 @@
-import { ethers, Provider, Abi } from 'ethers'
+import { ethers, Provider } from 'ethers'
 import StationABI from './StationABI.json'
 
 const STATION_ADDRESS = '0xYourContractAddress'
 
 // Function to get the Station contract instance
 export const getStationContract = (signerOrProvider: ethers.Signer | Provider) => {
-  return new ethers.Contract(STATION_ADDRESS, StationABI as Abi, signerOrProvider)
+  return new ethers.Contract(STATION_ADDRESS, StationABI, signerOrProvider)
 }
 
 // Function to connect to MetaMask wallet
