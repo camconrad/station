@@ -1,11 +1,11 @@
-import { ethers } from 'ethers';
-import StationABI from './StationABI.json';
+import { ethers, Provider } from 'ethers'
+import StationABI from './StationABI.json'
 
-const STATION_ADDRESS = '0xYourContractAddress';
+const STATION_ADDRESS = '0xYourContractAddress'
 
-export const getStationContract = (signerOrProvider: ethers.Signer | ethers.providers.Provider) => {
-  return new ethers.Contract(STATION_ADDRESS, StationABI, signerOrProvider);
-};
+export const getStationContract = (signerOrProvider: ethers.Signer | Provider) => {
+  return new ethers.Contract(STATION_ADDRESS, StationABI, signerOrProvider)
+}
 
 export const connectWallet = async () => {
   if (window.ethereum) {
