@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
-import { connectWallet, getStationContract, createTaskOnContract, completeTaskOnContract } from '../utils/contractUtils'
+import { connectWallet, getStationContract, createTaskOnContract, startTaskOnContract, completeTaskOnContract } from '../utils/contractUtils'
 import Header from '../components/Header'
 import Modal from '../components/Modal'
 
@@ -29,6 +29,7 @@ export default function Home() {
   const [contract, setContract] = useState<any>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [statusMessage, setStatusMessage] = useState<string>('')
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
 
   useEffect(() => {
     const initWallet = async () => {
@@ -36,9 +37,11 @@ export default function Home() {
       if (wallet?.signer) {
         const stationContract = getStationContract(wallet.signer)
         setContract(stationContract)
+        setIsWalletConnected(true) // Indicate that the wallet is connected
         console.log('Contract connected:', stationContract)
       } else {
         console.error('Failed to connect wallet.')
+        setIsWalletConnected(false) // Indicate that the wallet is not connected
       }
     }
     initWallet()
@@ -61,12 +64,28 @@ export default function Home() {
       [destination.droppableId]: destColumn,
     })
 
+    // Handle task transition to "Doing"
+    if (destination.droppableId === 'doing' && contract) {
+      setLoading(true)
+      setStatusMessage('Signing transaction to start the task...')
+      try {
+        const taskId = parseInt(removed.id, 10)
+        await startTaskOnContract(contract, taskId)
+        setStatusMessage('Task moved to Doing!')
+      } catch (error) {
+        console.error('Error starting task:', error)
+        setStatusMessage('Failed to move task to Doing. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    // Handle task completion to "Done"
     if (destination.droppableId === 'done' && contract) {
       setLoading(true)
       setStatusMessage('Signing transaction to complete the task...')
       try {
         const taskId = parseInt(removed.id, 10)
-        console.log(`Attempting to complete task ID: ${taskId}`)
         await completeTaskOnContract(contract, taskId)
         setStatusMessage('Task marked as complete! USDC payout triggered.')
       } catch (error) {
@@ -78,7 +97,20 @@ export default function Home() {
     }
   }
 
+  // Add the missing handleDeleteTask function
+  const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
+    setTasks({
+      ...tasks,
+      [columnId]: tasks[columnId].filter((task) => task.id !== taskId),
+    })
+  }
+
   const handleSaveTask = async (task: { taskContent: string, assignee: string, reward: number }) => {
+    if (!contract) {
+      setStatusMessage('Please connect your wallet to create a task.')
+      return
+    }
+
     const { taskContent, assignee, reward } = task
     const newTaskId = `${Date.now()}`
     const newTask: Task = { id: newTaskId, content: taskContent, assignee, reward }
@@ -88,28 +120,20 @@ export default function Home() {
       todo: [...tasks.todo, newTask],
     })
 
-    if (contract) {
-      setLoading(true)
-      setStatusMessage('Signing transaction to create a new task...')
-      try {
-        console.log('Creating task on contract:', task)
-        await createTaskOnContract(contract, taskContent, assignee, reward)
-        setStatusMessage('Task created successfully!')
-      } catch (error) {
-        console.error('Error creating task:', error)
-        setStatusMessage('Failed to create task. Please try again.')
-      } finally {
-        setLoading(false)
-      }
+    setLoading(true)
+    setStatusMessage('Signing transaction to create a new task...')
+    try {
+      await createTaskOnContract(contract, taskContent, assignee, reward)
+      setStatusMessage('Task created successfully!')
+    } catch (error) {
+      console.error('Error creating task:', error)
+      setStatusMessage('Failed to create task. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
-    setTasks({
-      ...tasks,
-      [columnId]: tasks[columnId].filter((task) => task.id !== taskId),
-    })
-  }
+  const isButtonDisabled = !isWalletConnected || loading
 
   return (
     <>
@@ -142,7 +166,7 @@ export default function Home() {
                                 <span>{task.content}</span>
                                 <button
                                   onClick={() => handleDeleteTask(columnId, task.id)}
-                                  className="text-red-500 transition-opacity duration-100 ease-linear opacity-0 hover:opacity-100 group-hover:opacity-100"
+                                  className="text-red-500 transition-opacity opacity-0 hover:opacity-100 group-hover:opacity-100"
                                 >
                                   ✕
                                 </button>
@@ -156,6 +180,7 @@ export default function Home() {
                           <button
                             className="w-full p-2 mt-4 text-white duration-100 ease-linear bg-black border border-black rounded-lg hover:bg-transparent hover:text-black"
                             onClick={() => setIsModalOpen(true)}
+                            disabled={isButtonDisabled}
                           >
                             + New Task
                           </button>
