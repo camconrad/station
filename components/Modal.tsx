@@ -11,17 +11,18 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
   const [taskContent, setTaskContent] = useState('')
   const [assignee, setAssignee] = useState('')
   const [reward, setReward] = useState<number>(0)
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   const handleSave = () => {
     // Validate inputs
     if (!taskContent || !assignee || reward <= 0) {
-      alert('Please fill in all fields and ensure the reward is greater than 0.')
+      setErrorMessage('Please fill in all fields and ensure the reward is greater than 0.')
       return
     }
 
     // Check if assignee is a valid Ethereum address
     if (!ethers.utils.isAddress(assignee)) {
-      alert('Please enter a valid Ethereum address for the assignee.')
+      setErrorMessage('Please enter a valid Ethereum address for the assignee.')
       return
     }
 
@@ -32,6 +33,7 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
     setTaskContent('')
     setAssignee('')
     setReward(0)
+    setErrorMessage('')
     onClose()
   }
 
@@ -41,8 +43,9 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-20 backdrop-blur-lg">
       <div className="p-6 bg-white rounded-lg w-96">
         <h2 className="mb-4 text-xl font-bold">Add New Task</h2>
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
-        <label className="block mb-1" htmlFor="taskContent">Task Content</label>
+        {/* <label className="block mb-1" htmlFor="taskContent">Task Content</label> */}
         <input
           id="taskContent"
           type="text"
@@ -52,7 +55,7 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
           className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:border-black"
         />
 
-        <label className="block mb-1" htmlFor="assignee">Assignee</label>
+        {/* <label className="block mb-1" htmlFor="assignee">Assignee</label> */}
         <input
           id="assignee"
           type="text"
@@ -62,7 +65,7 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
           className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:border-black"
         />
 
-        <label className="block mb-1" htmlFor="reward">Reward (USDC)</label>
+        {/* <label className="block mb-1" htmlFor="reward">Reward (USDC)</label> */}
         <input
           id="reward"
           type="number"
