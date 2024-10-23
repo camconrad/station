@@ -176,12 +176,12 @@ export default function Home() {
     }
 
     const { taskContent, assignee, reward } = task;
-    const rewardInSmallestUnit = ethers.utils.parseUnits(reward.toString(), 6); // Convert to 6 decimals here
+    const rewardInSmallestUnit = ethers.BigNumber.from(reward.toString()); // Pass as is, no conversion
     setLoading(true);
     setStatusMessage('Creating task...');
 
     try {
-      await createTaskOnContract(contract, taskContent, assignee, rewardInSmallestUnit); // Pass as BigNumber
+      await createTaskOnContract(contract, taskContent, assignee, rewardInSmallestUnit); // Pass directly as BigNumber
       setStatusMessage('Task created successfully!');
       await fetchTasks(contract, connectedAddress || '', adminAddress || '');
     } catch (error) {
