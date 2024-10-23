@@ -57,12 +57,24 @@ export const startTaskOnContract = async (contract: ethers.Contract, taskId: num
 // Complete task on the contract
 export const completeTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
-    const tx = await contract.completeTask(taskId)
-    console.log('Transaction sent:', tx.hash)
-    await tx.wait()
-    console.log('Task completed:', tx)
+    // Estimate gas for completing the task
+    const gasEstimate = await contract.estimateGas.completeTask(taskId);
+    console.log('Estimated gas for completing task:', gasEstimate.toString());
+
+    // Fetch the current balance of USDC in the contract for debugging
+    const currentBalance = await contract.balanceOf(contract.address);
+    console.log('Current USDC balance in the contract:', ethers.utils.formatUnits(currentBalance, 6));
+
+    // Send the transaction with a buffer to the gas limit
+    const tx = await contract.completeTask(taskId, {
+      gasLimit: gasEstimate.add(gasEstimate.div(10)), // Add a 10% buffer to the estimated gas limit
+    });
+    console.log('Transaction sent:', tx.hash);
+    
+    await tx.wait();
+    console.log('Task completed:', tx);
   } catch (error) {
-    console.error('Error completing task:', error)
-    throw error
+    console.error('Error completing task:', error);
+    throw error;
   }
 }
