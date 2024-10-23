@@ -31,27 +31,51 @@ export default function Home() {
   const [statusMessage, setStatusMessage] = useState<string>('')
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
 
-  useEffect(() => {
-    const initWallet = async () => {
-      const wallet = await connectWallet()
-      if (wallet?.signer) {
-        const stationContract = getStationContract(wallet.signer)
-        setContract(stationContract)
-        setIsWalletConnected(true) // Indicate that the wallet is connected
-        console.log('Contract connected:', stationContract)
-      } else {
-        console.error('Failed to connect wallet.')
-        setIsWalletConnected(false) // Indicate that the wallet is not connected
-      }
+  const connectUserWallet = async () => {
+    const wallet = await connectWallet()
+    if (wallet?.signer) {
+      const stationContract = getStationContract(wallet.signer)
+      setContract(stationContract)
+      setIsWalletConnected(true)
+
+      const assigneeAddress = await wallet.signer.getAddress()
+      await fetchTasks(stationContract, assigneeAddress) // Fetch tasks for the assignee
+    } else {
+      console.error('Failed to connect wallet.')
+      setIsWalletConnected(false)
     }
-    initWallet()
-  }, [])
+  }
+
+  const fetchTasks = async (contract: ethers.Contract, assignee: string) => {
+    try {
+      const totalTasks = await contract.taskCount()
+      const fetchedTasks: TasksState = { todo: [], doing: [], done: [] }
+
+      for (let i = 0; i < totalTasks; i++) {
+        const task = await contract.tasks(i)
+        if (task.assignee.toLowerCase() === assignee.toLowerCase()) {
+          const taskData: Task = {
+            id: i.toString(),
+            content: task.description,
+            assignee: task.assignee,
+            reward: parseFloat(ethers.utils.formatUnits(task.reward, 6)),
+          }
+          if (task.status === 0) fetchedTasks.todo.push(taskData)
+          else if (task.status === 1) fetchedTasks.doing.push(taskData)
+          else if (task.status === 2) fetchedTasks.done.push(taskData)
+        }
+      }
+
+      setTasks(fetchedTasks)
+      console.log('Tasks fetched:', fetchedTasks)
+    } catch (error) {
+      console.error('Error fetching tasks:', error)
+    }
+  }
 
   const onDragEnd = async (result: DropResult) => {
     const { source, destination } = result
     if (!destination) return
-
-    console.log(`Moving task from ${source.droppableId} to ${destination.droppableId}`)
 
     const sourceColumn = tasks[source.droppableId as keyof TasksState]
     const destColumn = tasks[destination.droppableId as keyof TasksState]
@@ -64,7 +88,6 @@ export default function Home() {
       [destination.droppableId]: destColumn,
     })
 
-    // Handle task transition to "Doing"
     if (destination.droppableId === 'doing' && contract) {
       setLoading(true)
       setStatusMessage('Signing transaction to start the task...')
@@ -80,7 +103,6 @@ export default function Home() {
       }
     }
 
-    // Handle task completion to "Done"
     if (destination.droppableId === 'done' && contract) {
       setLoading(true)
       setStatusMessage('Signing transaction to complete the task...')
@@ -97,7 +119,6 @@ export default function Home() {
     }
   }
 
-  // Add the missing handleDeleteTask function
   const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
     setTasks({
       ...tasks,
@@ -125,6 +146,9 @@ export default function Home() {
     try {
       await createTaskOnContract(contract, taskContent, assignee, reward)
       setStatusMessage('Task created successfully!')
+
+      const assigneeAddress = await contract.signer.getAddress()
+      await fetchTasks(contract, assigneeAddress)
     } catch (error) {
       console.error('Error creating task:', error)
       setStatusMessage('Failed to create task. Please try again.')
@@ -137,8 +161,7 @@ export default function Home() {
 
   return (
     <>
-      <Header />
-
+      <Header onConnect={connectUserWallet} isWalletConnected={isWalletConnected} />
       <div className="relative mt-16 container pt-4 pb-4 mx-auto max-w-[800px]">
         {loading && <div className="mb-4 text-center text-blue-500">{statusMessage}</div>}
 
@@ -175,7 +198,7 @@ export default function Home() {
                           </Draggable>
                         ))}
                         {provided.placeholder}
-                        
+
                         {columnId === 'todo' && (
                           <button
                             className="w-full p-2 mt-4 text-white duration-100 ease-linear bg-black border border-black rounded-lg hover:bg-transparent hover:text-black"
