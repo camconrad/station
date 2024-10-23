@@ -9,7 +9,7 @@ interface Task {
   id: string;
   content: string;
   assignee?: string;
-  reward?: ethers.BigNumber; // Updated to use BigNumber
+  reward?: ethers.BigNumber; // Keep as BigNumber
 }
 
 interface TasksState {
@@ -169,18 +169,19 @@ export default function Home() {
     });
   };
 
-  const handleSaveTask = async (task: { taskContent: string; assignee: string; reward: ethers.BigNumber }) => { // Updated to use BigNumber
+  const handleSaveTask = async (task: { taskContent: string; assignee: string; reward: number }) => { // Keep reward as number for Modal
     if (!contract) {
       setStatusMessage('Please connect your wallet to create a task.');
       return;
     }
 
     const { taskContent, assignee, reward } = task;
+    const rewardInSmallestUnit = ethers.utils.parseUnits(reward.toString(), 6); // Convert to 6 decimals here
     setLoading(true);
     setStatusMessage('Creating task...');
 
     try {
-      await createTaskOnContract(contract, taskContent, assignee, reward);
+      await createTaskOnContract(contract, taskContent, assignee, rewardInSmallestUnit); // Pass as BigNumber
       setStatusMessage('Task created successfully!');
       await fetchTasks(contract, connectedAddress || '', adminAddress || '');
     } catch (error) {
