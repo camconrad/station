@@ -9,7 +9,7 @@ interface Task {
   id: string;
   content: string;
   assignee?: string;
-  reward?: number;
+  reward?: ethers.BigNumber; // Updated to use BigNumber
 }
 
 interface TasksState {
@@ -92,7 +92,7 @@ export default function Home() {
           id: i.toString(),
           content: task.description,
           assignee: task.assignee,
-          reward: parseFloat(ethers.utils.formatUnits(task.reward, 6)),
+          reward: task.reward, // Keep as BigNumber
         };
 
         // Allow both admin and assignee to see the tasks
@@ -169,7 +169,7 @@ export default function Home() {
     });
   };
 
-  const handleSaveTask = async (task: { taskContent: string, assignee: string, reward: number }) => {
+  const handleSaveTask = async (task: { taskContent: string; assignee: string; reward: ethers.BigNumber }) => { // Updated to use BigNumber
     if (!contract) {
       setStatusMessage('Please connect your wallet to create a task.');
       return;
