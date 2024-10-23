@@ -12,16 +12,16 @@ Station is an automated task compensation software that streamlines workplace co
 - **X (Twitter)**: [x.com/0xStation_](https://x.com/0xStation_)
 - **Telegram**: [t.me/stationfi](https://t.me/stationfi)
 
-## Explainer
-
-![Explainer Image](./public/explainer.png)
-
 ## Addresses
 
 | Contract       | Address       |
 | -------------  | ------------- |
 | Station      | [0xc82480693692c443e4d4dc5fa5bC6496A4cac865](https://arbiscan.io/address/0xc82480693692c443e4d4dc5fa5bC6496A4cac865) |
 | USD Coin      | [0xaf88d065e77c8cC2239327C5EDb3A432268e5831](https://arbiscan.io/token/0xaf88d065e77c8cc2239327c5edb3a432268e5831) |
+
+## Explainer
+
+![Explainer Image](./public/explainer.png)
 
 ## Getting Started
 
