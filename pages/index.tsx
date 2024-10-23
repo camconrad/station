@@ -145,6 +145,7 @@ export default function Home() {
       try {
         // Check if the connected address is the assignee
         if (removed.assignee?.toLowerCase() === connectedAddress?.toLowerCase()) {
+          console.log('Attempting to complete task with ID:', removed.id); // Debugging line
           await completeTaskOnContract(contract, parseInt(removed.id, 10));
           setStatusMessage('Task marked as complete!')
         } else {

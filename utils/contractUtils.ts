@@ -57,29 +57,11 @@ export const startTaskOnContract = async (contract: ethers.Contract, taskId: num
 // Complete task on the contract
 export const completeTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
-    // Fetch the task details
-    const task = await contract.tasks(taskId);
-    const rewardAmount = task.reward; // Get the reward amount
-
-    // Check the USDC balance of the contract
-    const currentBalance = await contract.balanceOf(contract.address);
-    console.log('Current USDC balance in the contract:', ethers.utils.formatUnits(currentBalance, 6));
-
-    // Ensure the contract has enough balance to cover the reward
-    if (currentBalance.lt(rewardAmount)) {
-      throw new Error('Insufficient USDC balance in the contract to complete the task.');
-    }
-
-    // Estimate gas for completing the task
     const gasEstimate = await contract.estimateGas.completeTask(taskId);
-    console.log('Estimated gas for completing task:', gasEstimate.toString());
-
-    // Send the transaction with a buffer to the gas limit
     const tx = await contract.completeTask(taskId, {
       gasLimit: gasEstimate.add(gasEstimate.div(10)), // Add a 10% buffer to the estimated gas limit
     });
     console.log('Transaction sent:', tx.hash);
-    
     await tx.wait();
     console.log('Task completed:', tx);
   } catch (error) {
