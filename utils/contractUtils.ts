@@ -7,7 +7,7 @@ const ERC20_ABI = [
   "function transfer(address to, uint256 amount) returns (bool)",
 ];
 
-const STATION_ADDRESS = '0x952Ae816Cc618a76942730c4112A93e99CcDa56c';
+const STATION_ADDRESS = '0xc82480693692c443e4d4dc5fa5bC6496A4cac865';
 const USDC_ADDRESS = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
 
 // Connect to wallet

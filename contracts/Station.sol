@@ -31,6 +31,7 @@ contract Station {
         address assignee; // The address of the user assigned to the task
         uint256 reward; // The reward in USDC (with 6 decimals) for completing the task
         TaskStatus status; // The current status of the task
+        address creator; // The address of the user who created the task
     }
 
     /// @notice Mapping to store tasks with unique task IDs
@@ -94,7 +95,7 @@ contract Station {
     /// @param reward The reward amount in USDC for completing the task (expected in smallest unit, i.e., 6 decimals)
     function createTask(string memory description, address assignee, uint256 reward) public {
         require(reward > 0, "Reward must be greater than zero");
-        tasks[taskCount] = Task(description, assignee, reward * 1e6, TaskStatus.Todo); // Adjust for 6 decimals
+        tasks[taskCount] = Task(description, assignee, reward * 1e6, TaskStatus.Todo, msg.sender); // Adjust for 6 decimals and store creator
         emit TaskCreated(taskCount, description, assignee, reward * 1e6);
         taskCount++;
     }

@@ -10,6 +10,7 @@ interface Task {
   content: string;
   assignee?: string;
   reward?: ethers.BigNumber; // Keep as BigNumber
+  creator?: string; // Track the creator of the task
 }
 
 interface TasksState {
@@ -49,7 +50,7 @@ export default function Home() {
         const ownerAddress = await stationContract.owner();
         setAdminAddress(ownerAddress);
 
-        await fetchTasks(stationContract, address, ownerAddress);
+        await fetchTasks(stationContract, address);
       }
     } else {
       setIsWalletConnected(false);
@@ -74,14 +75,14 @@ export default function Home() {
           const ownerAddress = await stationContract.owner();
           setAdminAddress(ownerAddress);
 
-          await fetchTasks(stationContract, address, ownerAddress);
+          await fetchTasks(stationContract, address);
         }
       }
     };
     checkInitialConnection();
   }, []);
 
-  const fetchTasks = async (contract: ethers.Contract, userAddress: string, ownerAddress: string) => {
+  const fetchTasks = async (contract: ethers.Contract, userAddress: string) => {
     try {
       const totalTasks = await contract.taskCount();
       const fetchedTasks: TasksState = { todo: [], doing: [], done: [] };
@@ -92,11 +93,12 @@ export default function Home() {
           id: i.toString(),
           content: task.description,
           assignee: task.assignee,
+          creator: task.creator, // Add creator to task data
           reward: task.reward, // Keep as BigNumber
         };
 
-        // Allow both admin and assignee to see the tasks
-        if (task.assignee.toLowerCase() === userAddress.toLowerCase() || userAddress.toLowerCase() === ownerAddress.toLowerCase()) {
+        // Allow the assignee and the creator of the task to see it
+        if (task.assignee.toLowerCase() === userAddress.toLowerCase() || task.creator.toLowerCase() === userAddress.toLowerCase()) {
           if (task.status === 0) fetchedTasks.todo.push(taskData);
           else if (task.status === 1) fetchedTasks.doing.push(taskData);
           else if (task.status === 2) fetchedTasks.done.push(taskData);
@@ -183,7 +185,7 @@ export default function Home() {
     try {
       await createTaskOnContract(contract, taskContent, assignee, rewardInSmallestUnit); // Pass directly as BigNumber
       setStatusMessage('Task created successfully!');
-      await fetchTasks(contract, connectedAddress || '', adminAddress || '');
+      await fetchTasks(contract, connectedAddress || ''); // Fetch tasks based on connected address
     } catch (error) {
       setStatusMessage('Failed to create task.');
       console.error('Error creating task:', error);
