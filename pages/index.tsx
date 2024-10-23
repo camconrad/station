@@ -31,7 +31,6 @@ export default function Home() {
   const [statusMessage, setStatusMessage] = useState<string>('')
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
 
   const connectUserWallet = async () => {
     const wallet = await connectWallet()
@@ -43,14 +42,7 @@ export default function Home() {
 
         const address = await wallet.signer.getAddress()
         setConnectedAddress(address)
-
-        // Check if the connected user is the admin (contract owner)
-        const ownerAddress = await stationContract.owner()
-        if (ownerAddress.toLowerCase() === address.toLowerCase()) {
-          setIsAdmin(true)
-        }
-
-        await fetchTasks(stationContract, address, ownerAddress)
+        await fetchTasks(stationContract, address)
       }
     } else {
       setIsWalletConnected(false)
@@ -70,21 +62,14 @@ export default function Home() {
 
           const address = await wallet.signer.getAddress()
           setConnectedAddress(address)
-
-          // Check if the connected user is the admin (contract owner)
-          const ownerAddress = await stationContract.owner()
-          if (ownerAddress.toLowerCase() === address.toLowerCase()) {
-            setIsAdmin(true)
-          }
-
-          await fetchTasks(stationContract, address, ownerAddress)
+          await fetchTasks(stationContract, address)
         }
       }
     }
     checkInitialConnection()
   }, [])
 
-  const fetchTasks = async (contract: ethers.Contract, userAddress: string, ownerAddress: string) => {
+  const fetchTasks = async (contract: ethers.Contract, assignee: string) => {
     try {
       const totalTasks = await contract.taskCount()
       const fetchedTasks: TasksState = { todo: [], doing: [], done: [] }
@@ -98,8 +83,8 @@ export default function Home() {
           reward: parseFloat(ethers.utils.formatUnits(task.reward, 6)),
         }
 
-        // Display tasks to the admin or the assignee
-        if (task.assignee.toLowerCase() === userAddress.toLowerCase() || userAddress.toLowerCase() === ownerAddress.toLowerCase()) {
+        // Check if the user is the assignee
+        if (task.assignee.toLowerCase() === assignee.toLowerCase()) {
           if (task.status === 0) fetchedTasks.todo.push(taskData)
           else if (task.status === 1) fetchedTasks.doing.push(taskData)
           else if (task.status === 2) fetchedTasks.done.push(taskData)
@@ -142,17 +127,17 @@ export default function Home() {
       }
     }
 
-    if (destination.droppableId === 'done' && contract && connectedAddress) {
-      if (connectedAddress.toLowerCase() !== removed.assignee?.toLowerCase()) {
-        setStatusMessage('Only the assignee can complete the task.')
-        return
-      }
-
+    if (destination.droppableId === 'done' && contract) {
       setLoading(true)
       setStatusMessage('Completing the task...')
       try {
-        await completeTaskOnContract(contract, parseInt(removed.id, 10))
-        setStatusMessage('Task marked as complete!')
+        // Make sure only the assignee can complete the task
+        if (removed.assignee?.toLowerCase() === connectedAddress?.toLowerCase()) {
+          await completeTaskOnContract(contract, parseInt(removed.id, 10));
+          setStatusMessage('Task marked as complete!')
+        } else {
+          setStatusMessage('Only the assignee can complete the task.');
+        }
       } catch (error) {
         setStatusMessage('Failed to complete the task.')
         console.error('Error completing task:', error)
@@ -182,7 +167,7 @@ export default function Home() {
     try {
       await createTaskOnContract(contract, taskContent, assignee, reward)
       setStatusMessage('Task created successfully!')
-      await fetchTasks(contract, connectedAddress || '', connectedAddress || '')
+      await fetchTasks(contract, connectedAddress || '');
     } catch (error) {
       setStatusMessage('Failed to create task.')
       console.error('Error creating task:', error)
