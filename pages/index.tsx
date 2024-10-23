@@ -126,12 +126,12 @@ export default function Home() {
       }
     }
 
-    if (destination.droppableId === 'done' && contract && connectedAddress) {
+    if (destination.droppableId === 'done' && contract) {
       setLoading(true)
       setStatusMessage('Completing the task...')
       try {
         // Check if the connected address is the assignee
-        if (removed.assignee?.toLowerCase() === connectedAddress.toLowerCase()) {
+        if (removed.assignee?.toLowerCase() === connectedAddress?.toLowerCase()) {
           await completeTaskOnContract(contract, parseInt(removed.id, 10));
           setStatusMessage('Task marked as complete!')
         } else {
