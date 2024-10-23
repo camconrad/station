@@ -6,10 +6,15 @@ import Popover from '../components/common/Popover'
 import { shortenAddress } from '../utils/helpers'
 import { FiLogOut } from 'react-icons/fi'
 
-const Header = () => {
+interface HeaderProps {
+  onConnect: () => Promise<void>
+  isWalletConnected: boolean
+}
+
+const Header = ({ onConnect, isWalletConnected }: HeaderProps) => {
   const { address } = useAccount()
-  const { open } = useWeb3Modal()
   const { disconnect } = useDisconnect()
+  const { open } = useWeb3Modal()
 
   const handleDisconnect = () => {
     disconnect()
@@ -28,7 +33,7 @@ const Header = () => {
         </Link>
         
         <div className="flex items-center space-x-4 text-[14px]">
-          {address ? (
+          {isWalletConnected ? (
             <Popover
               placement="bottom-right"
               content={
@@ -47,7 +52,7 @@ const Header = () => {
           ) : (
             <button
               className="px-3 py-1 text-black border border-black rounded-full cursor-pointer"
-              onClick={open}
+              onClick={onConnect}
             >
               Connect
             </button>
