@@ -30,25 +30,45 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false)
   const [statusMessage, setStatusMessage] = useState<string>('')
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
+  const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
 
   const connectUserWallet = async () => {
     const wallet = await connectWallet()
     if (wallet?.signer) {
       const stationContract = getStationContract(wallet.signer)
-      setContract(stationContract)
-      setIsWalletConnected(true)
-
-      const assigneeAddress = await wallet.signer.getAddress()
-
-      // Add a null check for stationContract before calling fetchTasks
       if (stationContract) {
-        await fetchTasks(stationContract, assigneeAddress) // Fetch tasks for the assignee
+        setContract(stationContract)
+        setIsWalletConnected(true)
+
+        const address = await wallet.signer.getAddress()
+        setConnectedAddress(address)
+        await fetchTasks(stationContract, address)
       }
     } else {
-      console.error('Failed to connect wallet.')
       setIsWalletConnected(false)
+      setConnectedAddress(null)
+      console.error('Failed to connect wallet.')
     }
   }
+
+  useEffect(() => {
+    // Check if wallet is already connected on initial load
+    const checkInitialConnection = async () => {
+      const wallet = await connectWallet()
+      if (wallet?.signer) {
+        const stationContract = getStationContract(wallet.signer)
+        if (stationContract) {
+          setContract(stationContract)
+          setIsWalletConnected(true)
+
+          const address = await wallet.signer.getAddress()
+          setConnectedAddress(address)
+          await fetchTasks(stationContract, address)
+        }
+      }
+    }
+    checkInitialConnection()
+  }, [])
 
   const fetchTasks = async (contract: ethers.Contract, assignee: string) => {
     try {
@@ -94,14 +114,12 @@ export default function Home() {
 
     if (destination.droppableId === 'doing' && contract) {
       setLoading(true)
-      setStatusMessage('Signing transaction to start the task...')
+      setStatusMessage('Starting the task...')
       try {
-        const taskId = parseInt(removed.id, 10)
-        await startTaskOnContract(contract, taskId)
+        await startTaskOnContract(contract, parseInt(removed.id, 10))
         setStatusMessage('Task moved to Doing!')
       } catch (error) {
-        console.error('Error starting task:', error)
-        setStatusMessage('Failed to move task to Doing. Please try again.')
+        setStatusMessage('Failed to move task to Doing.')
       } finally {
         setLoading(false)
       }
@@ -109,25 +127,16 @@ export default function Home() {
 
     if (destination.droppableId === 'done' && contract) {
       setLoading(true)
-      setStatusMessage('Signing transaction to complete the task...')
+      setStatusMessage('Completing the task...')
       try {
-        const taskId = parseInt(removed.id, 10)
-        await completeTaskOnContract(contract, taskId)
-        setStatusMessage('Task marked as complete! USDC payout triggered.')
+        await completeTaskOnContract(contract, parseInt(removed.id, 10))
+        setStatusMessage('Task marked as complete!')
       } catch (error) {
-        console.error('Error completing task:', error)
-        setStatusMessage('Failed to complete the task. Please try again.')
+        setStatusMessage('Failed to complete the task.')
       } finally {
         setLoading(false)
       }
     }
-  }
-
-  const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
-    setTasks({
-      ...tasks,
-      [columnId]: tasks[columnId].filter((task) => task.id !== taskId),
-    })
   }
 
   const handleSaveTask = async (task: { taskContent: string, assignee: string, reward: number }) => {
@@ -137,29 +146,15 @@ export default function Home() {
     }
 
     const { taskContent, assignee, reward } = task
-    const newTaskId = `${Date.now()}`
-    const newTask: Task = { id: newTaskId, content: taskContent, assignee, reward }
-
-    setTasks({
-      ...tasks,
-      todo: [...tasks.todo, newTask],
-    })
-
     setLoading(true)
-    setStatusMessage('Signing transaction to create a new task...')
+    setStatusMessage('Creating task...')
+
     try {
       await createTaskOnContract(contract, taskContent, assignee, reward)
       setStatusMessage('Task created successfully!')
-
-      const assigneeAddress = await contract.signer.getAddress()
-
-      // Add a null check for contract before calling fetchTasks
-      if (contract) {
-        await fetchTasks(contract, assigneeAddress)
-      }
+      await fetchTasks(contract, assignee)
     } catch (error) {
-      console.error('Error creating task:', error)
-      setStatusMessage('Failed to create task. Please try again.')
+      setStatusMessage('Failed to create task.')
     } finally {
       setLoading(false)
     }
@@ -169,7 +164,11 @@ export default function Home() {
 
   return (
     <>
-      <Header onConnect={connectUserWallet} isWalletConnected={isWalletConnected} />
+      <Header 
+        onConnect={connectUserWallet} 
+        isWalletConnected={isWalletConnected} 
+        connectedAddress={connectedAddress} 
+      />
       <div className="relative mt-16 container pt-4 pb-4 mx-auto max-w-[800px]">
         {loading && <div className="mb-4 text-center text-blue-500">{statusMessage}</div>}
 

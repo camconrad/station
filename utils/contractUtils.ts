@@ -7,7 +7,6 @@ const STATION_ADDRESS = '0x46C4DC3785c8baD38DDBfB6fAB61fBe0833B5f9A'
 export const connectWallet = async () => {
   if (typeof window.ethereum !== 'undefined') {
     try {
-      // Request wallet connection
       await window.ethereum.request({ method: 'eth_requestAccounts' })
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
@@ -25,27 +24,19 @@ export const connectWallet = async () => {
 
 // Get Station contract instance
 export const getStationContract = (signerOrProvider: ethers.Signer | ethers.providers.Provider) => {
-  if (!signerOrProvider) {
-    console.error('No signer or provider provided')
-    return null
-  }
+  if (!signerOrProvider) return null
   return new ethers.Contract(STATION_ADDRESS, StationABI, signerOrProvider)
 }
 
 // Create task on the contract
-export const createTaskOnContract = async (
-  contract: ethers.Contract,
-  description: string,
-  assignee: string,
-  reward: number
-) => {
+export const createTaskOnContract = async (contract: ethers.Contract, description: string, assignee: string, reward: number) => {
   try {
     const tx = await contract.createTask(description, assignee, ethers.utils.parseUnits(reward.toString(), 6))
-    console.log('Transaction sent, waiting for confirmation...', tx.hash)
+    console.log('Transaction sent:', tx.hash)
     await tx.wait()
-    console.log('Task created on contract:', tx)
+    console.log('Task created:', tx)
   } catch (error) {
-    console.error('Error creating task on contract:', error)
+    console.error('Error creating task:', error)
     throw error
   }
 }
@@ -54,11 +45,11 @@ export const createTaskOnContract = async (
 export const startTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
     const tx = await contract.startTask(taskId)
-    console.log('Transaction sent, waiting for confirmation...', tx.hash)
+    console.log('Transaction sent:', tx.hash)
     await tx.wait()
-    console.log('Task started on contract:', tx)
+    console.log('Task started:', tx)
   } catch (error) {
-    console.error('Error starting task on contract:', error)
+    console.error('Error starting task:', error)
     throw error
   }
 }
@@ -67,11 +58,11 @@ export const startTaskOnContract = async (contract: ethers.Contract, taskId: num
 export const completeTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
     const tx = await contract.completeTask(taskId)
-    console.log('Transaction sent, waiting for confirmation...', tx.hash)
+    console.log('Transaction sent:', tx.hash)
     await tx.wait()
-    console.log('Task completed on contract:', tx)
+    console.log('Task completed:', tx)
   } catch (error) {
-    console.error('Error completing task on contract:', error)
+    console.error('Error completing task:', error)
     throw error
   }
 }

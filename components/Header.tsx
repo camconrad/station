@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useWeb3Modal } from '@web3modal/react'
 import Popover from '../components/common/Popover'
@@ -9,10 +9,10 @@ import { FiLogOut } from 'react-icons/fi'
 interface HeaderProps {
   onConnect: () => Promise<void>
   isWalletConnected: boolean
+  connectedAddress: string | null
 }
 
-const Header = ({ onConnect, isWalletConnected }: HeaderProps) => {
-  const { address } = useAccount()
+const Header = ({ onConnect, isWalletConnected, connectedAddress }: HeaderProps) => {
   const { disconnect } = useDisconnect()
   const { open } = useWeb3Modal()
 
@@ -31,9 +31,9 @@ const Header = ({ onConnect, isWalletConnected }: HeaderProps) => {
           />
           <h2 className="ml-2 text-xl font-bold">Station</h2>
         </Link>
-        
+
         <div className="flex items-center space-x-4 text-[14px]">
-          {isWalletConnected && address ? (
+          {isWalletConnected && connectedAddress ? (
             <Popover
               placement="bottom-right"
               content={
@@ -46,7 +46,7 @@ const Header = ({ onConnect, isWalletConnected }: HeaderProps) => {
               }
             >
               <div className="px-3 py-1 text-black border border-black rounded-full cursor-pointer">
-                {shortenAddress(address)}
+                {shortenAddress(connectedAddress)}
               </div>
             </Popover>
           ) : (
