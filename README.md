@@ -6,7 +6,7 @@
 </p>
 
 ## Overview
-Station is an automated task compensation software that streamlines workplace collaboration. It facilitates communication, assignments, and on-demand payouts in USD Coin (USDC) on Arbitrum One, triggered when a task is moved from "Doing" to "Done," ensuring timely compensation for completed work.
+Station is an automated task compensation software that streamlines workplace collaboration. It facilitates communication, assignments, and on-demand payouts in USD Coin (USDC) on Arbitrum One, triggered when a task is moved from "Doing" to "Done", ensuring timely compensation for completed work.
 
 - **Website**: [station.finance](https://station.finance)
 - **X (Twitter)**: [x.com/0xStation_](https://x.com/0xStation_)
