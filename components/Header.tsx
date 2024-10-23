@@ -33,7 +33,7 @@ const Header = ({ onConnect, isWalletConnected }: HeaderProps) => {
         </Link>
         
         <div className="flex items-center space-x-4 text-[14px]">
-          {isWalletConnected ? (
+          {isWalletConnected && address ? (
             <Popover
               placement="bottom-right"
               content={
