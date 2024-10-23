@@ -52,7 +52,6 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // Check if wallet is already connected on initial load
     const checkInitialConnection = async () => {
       const wallet = await connectWallet()
       if (wallet?.signer) {
@@ -137,6 +136,14 @@ export default function Home() {
         setLoading(false)
       }
     }
+  }
+
+  // Add handleDeleteTask function back
+  const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
+    setTasks({
+      ...tasks,
+      [columnId]: tasks[columnId].filter((task) => task.id !== taskId),
+    })
   }
 
   const handleSaveTask = async (task: { taskContent: string, assignee: string, reward: number }) => {
