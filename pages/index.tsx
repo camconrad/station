@@ -119,26 +119,32 @@ export default function Home() {
         setStatusMessage('Task moved to Doing!')
       } catch (error) {
         setStatusMessage('Failed to move task to Doing.')
+        console.error('Error starting task:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    if (destination.droppableId === 'done' && contract) {
+    if (destination.droppableId === 'done' && contract && connectedAddress) {
+      if (connectedAddress.toLowerCase() !== removed.assignee?.toLowerCase()) {
+        setStatusMessage('Only the assignee can complete the task.')
+        return
+      }
+
       setLoading(true)
       setStatusMessage('Completing the task...')
       try {
-        await completeTaskOnContract(contract, parseInt(removed.id, 10))
+        await completeTaskOnContract(contract, parseInt(removed.id, 10), connectedAddress)
         setStatusMessage('Task marked as complete!')
       } catch (error) {
         setStatusMessage('Failed to complete the task.')
+        console.error('Error completing task:', error)
       } finally {
         setLoading(false)
       }
     }
   }
 
-  // Add handleDeleteTask function back
   const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
     setTasks({
       ...tasks,
@@ -162,6 +168,7 @@ export default function Home() {
       await fetchTasks(contract, assignee)
     } catch (error) {
       setStatusMessage('Failed to create task.')
+      console.error('Error creating task:', error)
     } finally {
       setLoading(false)
     }
