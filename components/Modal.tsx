@@ -24,7 +24,7 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-300 bg-opacity-20 backdrop-blur-lg">
       <div className="p-6 bg-white rounded-lg w-96">
         <h2 className="mb-4 text-xl font-bold">Add New Task</h2>
 
@@ -55,7 +55,7 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
         <div className="flex justify-end space-x-2">
           <button
               onClick={handleSave}
-              className="px-4 py-2 text-white bg-black rounded-full hover:bg-gray-800"
+              className="px-4 py-2 text-white duration-100 ease-linear bg-black border border-black rounded-full hover:bg-transparent"
             >
               Save Task
           </button>
