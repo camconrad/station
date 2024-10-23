@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import StationABI from './StationABI.json';
 
+// ERC20 ABI for USDC
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
   "function transfer(address to, uint256 amount) returns (bool)",
@@ -75,9 +76,11 @@ export const completeTaskOnContract = async (contract: ethers.Contract, taskId: 
 
     console.log('Reward amount to transfer:', ethers.utils.formatUnits(rewardAmount, 6));
 
+    // Get USDC contract instance
+    const usdcContract = getUSDCContract(contract.provider);
+
     // Check the USDC balance of the contract
-    const contractBalance = await contract.USDC(); // Get the USDC address from your contract if needed
-    const balance = await IERC20(contract.USDC()).balanceOf(contract.address);
+    const balance = await usdcContract.balanceOf(contract.address);
     
     console.log('Contract USDC balance:', ethers.utils.formatUnits(balance, 6));
 
