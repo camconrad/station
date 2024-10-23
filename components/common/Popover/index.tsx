@@ -37,33 +37,32 @@ const Popover = ({
 }: PopoverProps) => {
   const [isOpen, setOpen] = useState(false)
 
-  const popoverContainerRef = useRef(null)
+  const popoverContainerRef = useRef<HTMLDivElement | null>(null) // Updated type
 
   const isTriggerClick = trigger === 'click'
   const isTriggerHover = trigger === 'hover'
 
   function closeMoreMenu(e: MouseEvent) {
+    const popoverElement = popoverContainerRef.current
     if (
-      e.target !== popoverContainerRef.current &&
-      !popoverContainerRef.current?.contains(e.target as Node)
+      popoverElement &&
+      e.target !== popoverElement &&
+      !popoverElement.contains(e.target as Node)
     ) {
       setOpen(false)
     }
   }
 
-  useEffect(
-    function () {
+  useEffect(() => {
+    if (isTriggerClick) {
+      window.addEventListener('click', closeMoreMenu)
+    }
+    return () => {
       if (isTriggerClick) {
-        window.addEventListener('click', closeMoreMenu)
+        window.removeEventListener('click', closeMoreMenu)
       }
-      return () => {
-        if (isTriggerClick) {
-          window.removeEventListener('click', closeMoreMenu)
-        }
-      }
-    },
-    [isTriggerClick]
-  )
+    }
+  }, [isTriggerClick])
 
   useEffect(() => {
     setOpen(false)
@@ -121,4 +120,5 @@ const Popover = ({
     </div>
   )
 }
+
 export default Popover
