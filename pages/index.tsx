@@ -151,7 +151,7 @@ export default function Home() {
       setLoading(true)
       setStatusMessage('Completing the task...')
       try {
-        await completeTaskOnContract(contract, parseInt(removed.id, 10), connectedAddress)
+        await completeTaskOnContract(contract, parseInt(removed.id, 10))
         setStatusMessage('Task marked as complete!')
       } catch (error) {
         setStatusMessage('Failed to complete the task.')
