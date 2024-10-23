@@ -197,7 +197,7 @@ export default function Home() {
         isWalletConnected={isWalletConnected} 
         connectedAddress={connectedAddress} 
       />
-      <div className="relative mt-16 container pt-4 pb-4 mx-auto max-w-[800px]">
+      <div className="relative mt-16 container pt-4 pb-4 mx-auto max-w-[800px] px-3 md:px-0">
         {loading && <div className="mb-4 text-center text-blue-500">{statusMessage}</div>}
 
         <DragDropContext onDragEnd={onDragEnd}>

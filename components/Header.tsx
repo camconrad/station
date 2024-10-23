@@ -22,7 +22,7 @@ const Header = ({ onConnect, isWalletConnected, connectedAddress }: HeaderProps)
 
   return (
     <header className="fixed inset-x-0 top-0 z-10 bg-white dark:bg-black mx-auto max-w-[800px]">
-      <div className="container flex items-center justify-between pt-4 pb-4 mx-auto">
+      <div className="container flex items-center justify-between px-3 pt-4 pb-4 mx-auto md:px-0">
         <Link href="/" className="flex items-center">
           <img 
             src="https://cdn.prod.website-files.com/671597a7dd56e19ff494a076/67159857e034eba568b415ae_station.png" 
