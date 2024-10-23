@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (task: { taskContent: string; assignee: string; reward: ethers.BigNumber }) => void; // Change type to BigNumber
+  onSave: (task: { taskContent: string; assignee: string; reward: number }) => void; // Keep reward as number
 }
 
 export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
@@ -25,10 +25,7 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
       return;
     }
 
-    // Convert reward to the smallest unit (6 decimals)
-    const rewardInSmallestUnit = ethers.utils.parseUnits(reward.toString(), 6); // Convert to 6 decimals
-
-    onSave({ taskContent, assignee, reward: rewardInSmallestUnit }); // Pass as BigNumber
+    onSave({ taskContent, assignee, reward }); // Pass reward as a number directly
     setTaskContent('');
     setAssignee('');
     setReward(0);

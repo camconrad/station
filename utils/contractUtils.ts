@@ -42,9 +42,10 @@ export const getUSDCContract = (signerOrProvider: ethers.Signer | ethers.provide
 };
 
 // Create task on the contract
-export const createTaskOnContract = async (contract: ethers.Contract, description: string, assignee: string, reward: ethers.BigNumber) => {
+export const createTaskOnContract = async (contract: ethers.Contract, description: string, assignee: string, reward: number) => {
   try {
-    const tx = await contract.createTask(description, assignee, reward);
+    const rewardInSmallestUnit = ethers.utils.parseUnits(reward.toString(), 6); // Convert to 6 decimals here
+    const tx = await contract.createTask(description, assignee, rewardInSmallestUnit);
     console.log('Transaction sent:', tx.hash);
     await tx.wait();
     console.log('Task created:', tx);
