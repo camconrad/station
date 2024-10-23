@@ -3,15 +3,12 @@ import StationABI from './StationABI.json'
 
 const STATION_ADDRESS = '0xYourContractAddress'
 
-// Ensure the ABI is typed correctly
 const stationAbi = StationABI as InterfaceAbi
 
-// Function to get the Station contract instance
 export const getStationContract = (signerOrProvider: ethers.Signer | Provider) => {
   return new ethers.Contract(STATION_ADDRESS, stationAbi, signerOrProvider)
 }
 
-// Function to connect to MetaMask wallet
 export const connectWallet = async () => {
   if (typeof window !== 'undefined' && window.ethereum) {
     try {
