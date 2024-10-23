@@ -72,11 +72,5 @@ yarn install
 # Compile smart contracts
 npx hardhat compile
 
-# Start the local Hardhat network
-npx hardhat node
-
-# Run tests
-npx hardhat test
-
 # Start the application
 yarn start
