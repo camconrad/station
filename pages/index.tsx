@@ -83,7 +83,6 @@ export default function Home() {
           reward: parseFloat(ethers.utils.formatUnits(task.reward, 6)),
         }
 
-        // Check if the user is the assignee
         if (task.assignee.toLowerCase() === assignee.toLowerCase()) {
           if (task.status === 0) fetchedTasks.todo.push(taskData)
           else if (task.status === 1) fetchedTasks.doing.push(taskData)
@@ -127,12 +126,12 @@ export default function Home() {
       }
     }
 
-    if (destination.droppableId === 'done' && contract) {
+    if (destination.droppableId === 'done' && contract && connectedAddress) {
       setLoading(true)
       setStatusMessage('Completing the task...')
       try {
-        // Make sure only the assignee can complete the task
-        if (removed.assignee?.toLowerCase() === connectedAddress?.toLowerCase()) {
+        // Check if the connected address is the assignee
+        if (removed.assignee?.toLowerCase() === connectedAddress.toLowerCase()) {
           await completeTaskOnContract(contract, parseInt(removed.id, 10));
           setStatusMessage('Task marked as complete!')
         } else {
