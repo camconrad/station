@@ -26,7 +26,7 @@ const initialTasks: TasksState = {
 export default function Home() {
   const [tasks, setTasks] = useState<TasksState>(initialTasks)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [contract, setContract] = useState<any>(null)
+  const [contract, setContract] = useState<ethers.Contract | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [statusMessage, setStatusMessage] = useState<string>('')
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
@@ -39,7 +39,11 @@ export default function Home() {
       setIsWalletConnected(true)
 
       const assigneeAddress = await wallet.signer.getAddress()
-      await fetchTasks(stationContract, assigneeAddress) // Fetch tasks for the assignee
+
+      // Add a null check for stationContract before calling fetchTasks
+      if (stationContract) {
+        await fetchTasks(stationContract, assigneeAddress) // Fetch tasks for the assignee
+      }
     } else {
       console.error('Failed to connect wallet.')
       setIsWalletConnected(false)
@@ -148,7 +152,11 @@ export default function Home() {
       setStatusMessage('Task created successfully!')
 
       const assigneeAddress = await contract.signer.getAddress()
-      await fetchTasks(contract, assigneeAddress)
+
+      // Add a null check for contract before calling fetchTasks
+      if (contract) {
+        await fetchTasks(contract, assigneeAddress)
+      }
     } catch (error) {
       console.error('Error creating task:', error)
       setStatusMessage('Failed to create task. Please try again.')
