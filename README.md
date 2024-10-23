@@ -41,6 +41,9 @@ To use the interface, follow these simple steps:
 
 ## Usage
 
+> [!TIP]
+> Ensure the Station contract is funded with USD Coin (USDC).
+
 1. **Creating a Task**
    - Call the createTask function from the smart contract.
    - Provide the task desc. assignee's address, and the reward amount in USDC.
