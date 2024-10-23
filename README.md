@@ -28,7 +28,7 @@ To use the interface, follow these simple steps:
    - Press "Connect" to access Station's features.
 
 2. **Choose Your Action**
-   - **Task Management**: Create and assign tasks to team members. Use custom labels to communicate task requirements.
+   - **Task Management**: Create and assign tasks. Label to communicate requirements.
    - **Collaboration**: Track task progress as assignees move them from "To Do" to "Doing" and finally to "Done," facilitating transparency and accountability.
    - **Compensation**: Configure payouts to automate compensation for completed tasks, ensuring contributors are rewarded promptly when tasks are marked as done.
 
