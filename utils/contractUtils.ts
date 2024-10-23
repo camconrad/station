@@ -79,6 +79,11 @@ export const completeTaskOnContract = async (contract: ethers.Contract, taskId: 
     // Get USDC contract instance
     const usdcContract = getUSDCContract(contract.provider);
 
+    // Check if the USDC contract instance is valid
+    if (!usdcContract) {
+      throw new Error('Failed to get USDC contract instance');
+    }
+
     // Check the USDC balance of the contract
     const balance = await usdcContract.balanceOf(contract.address);
     
