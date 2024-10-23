@@ -29,8 +29,8 @@ To use the interface, follow these simple steps:
 
 2. **Choose Your Action**
    - **Task Management**: Create and assign tasks. Label to communicate requirements.
-   - **Collaboration**: Track progress as assignees move tasks from "To Do" to "Doing" and "Doing" to "Done," facilitating transparency and accountability.
-   - **Compensation**: Configure payouts to automate compensation for completed tasks, ensuring contributors are rewarded promptly when tasks are marked as done.
+   - **Collaboration**: Track progress as assignees move tasks from "To Do" to "Doing" and "Doing" to "Done".
+   - **Compensation**: Configure payouts to automate compensation for completed tasks.
 
 3. **Monitor and Manage**
    - Use the dashboard to track task status and compensation history.
