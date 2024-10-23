@@ -41,8 +41,6 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-20 backdrop-blur-lg">
       <div className="p-6 bg-white rounded-lg w-96">
         <h2 className="mb-4 text-xl font-bold">Add New Task</h2>
-
-        <label className="block mb-1" htmlFor="taskContent">Task Content</label>
         <input
           id="taskContent"
           type="text"
@@ -51,8 +49,6 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
           onChange={(e) => setTaskContent(e.target.value)}
           className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:border-black"
         />
-
-        <label className="block mb-1" htmlFor="assignee">Assignee</label>
         <input
           id="assignee"
           type="text"
@@ -61,8 +57,6 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
           onChange={(e) => setAssignee(e.target.value)}
           className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:border-black"
         />
-
-        <label className="block mb-1" htmlFor="reward">Reward (USDC)</label>
         <input
           id="reward"
           type="number"
