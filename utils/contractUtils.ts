@@ -57,12 +57,7 @@ export const startTaskOnContract = async (contract: ethers.Contract, taskId: num
 // Complete task on the contract
 export const completeTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
-    const gasEstimate = await contract.estimateGas.completeTask(taskId)
-
-    const tx = await contract.completeTask(taskId, {
-      gasLimit: gasEstimate.add(gasEstimate.div(10)), // Add a 10% buffer to the estimated gas limit
-    })
-
+    const tx = await contract.completeTask(taskId)
     console.log('Transaction sent:', tx.hash)
     await tx.wait()
     console.log('Task completed:', tx)
