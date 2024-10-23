@@ -3,66 +3,66 @@ import StationABI from './StationABI.json'
 
 const STATION_ADDRESS = '0x46C4DC3785c8baD38DDBfB6fAB61fBe0833B5f9A'
 
-// Get Station contract instance
-export const getStationContract = (signerOrProvider: ethers.Signer | ethers.Provider) => {
-  return new ethers.Contract(STATION_ADDRESS, StationABI, signerOrProvider)
-}
-
-// Connect to MetaMask wallet
+// Connect to wallet
 export const connectWallet = async () => {
-  if (typeof window !== 'undefined' && window.ethereum) {
+  if (typeof window.ethereum !== 'undefined') {
     try {
+      await window.ethereum.request({ method: 'eth_requestAccounts' })
       const provider = new ethers.providers.Web3Provider(window.ethereum)
-      await provider.send('eth_requestAccounts', [])
       const signer = provider.getSigner()
       return { provider, signer }
     } catch (error) {
-      console.error('Error connecting wallet:', error)
+      console.error('Wallet connection failed:', error)
       return null
     }
   } else {
-    alert('Please install MetaMask to use this app.')
+    console.error('MetaMask is not installed')
     return null
   }
 }
 
-// Create a new task on the contract
+// Get Station contract instance
+export const getStationContract = (signerOrProvider: ethers.Signer | ethers.providers.Provider) => {
+  return new ethers.Contract(STATION_ADDRESS, StationABI, signerOrProvider)
+}
+
+// Create task on the contract
 export const createTaskOnContract = async (
-  signer: ethers.Signer, 
-  description: string, 
-  assignee: string, 
+  contract: ethers.Contract,
+  description: string,
+  assignee: string,
   reward: number
 ) => {
-  const contract = getStationContract(signer)
   try {
     const tx = await contract.createTask(description, assignee, ethers.utils.parseUnits(reward.toString(), 6))
     await tx.wait()
-    console.log('Task created on contract')
+    console.log('Task created on contract:', tx)
   } catch (error) {
-    console.error('Error creating task:', error)
+    console.error('Error creating task on contract:', error)
+    throw error
   }
 }
 
-// Start a task on the contract
-export const startTaskOnContract = async (signer: ethers.Signer, taskId: number) => {
-  const contract = getStationContract(signer)
+// Start task on the contract
+export const startTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
     const tx = await contract.startTask(taskId)
     await tx.wait()
-    console.log('Task started on contract')
+    console.log('Task started on contract:', tx)
   } catch (error) {
-    console.error('Error starting task:', error)
+    console.error('Error starting task on contract:', error)
+    throw error
   }
 }
 
-// Complete a task on the contract
-export const completeTaskOnContract = async (signer: ethers.Signer, taskId: number) => {
-  const contract = getStationContract(signer)
+// Complete task on the contract
+export const completeTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
     const tx = await contract.completeTask(taskId)
     await tx.wait()
-    console.log('Task completed on contract')
+    console.log('Task completed on contract:', tx)
   } catch (error) {
-    console.error('Error completing task:', error)
+    console.error('Error completing task on contract:', error)
+    throw error
   }
 }
