@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { ethers } from 'ethers'
 
 interface ModalProps {
   isOpen: boolean
@@ -12,13 +13,26 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
   const [reward, setReward] = useState<number>(0)
 
   const handleSave = () => {
-    if (taskContent && assignee && reward) {
-      onSave({ taskContent, assignee, reward })
-      setTaskContent('')
-      setAssignee('')
-      setReward(0)
-      onClose()
+    // Validate inputs
+    if (!taskContent || !assignee || reward <= 0) {
+      alert('Please fill in all fields and ensure the reward is greater than 0.')
+      return
     }
+
+    // Check if assignee is a valid Ethereum address
+    if (!ethers.utils.isAddress(assignee)) {
+      alert('Please enter a valid Ethereum address for the assignee.')
+      return
+    }
+
+    // Convert reward to the smallest unit (6 decimals)
+    const rewardInSmallestUnit = reward * 1e6; // Multiply by 1,000,000
+
+    onSave({ taskContent, assignee, reward: rewardInSmallestUnit })
+    setTaskContent('')
+    setAssignee('')
+    setReward(0)
+    onClose()
   }
 
   if (!isOpen) return null
@@ -28,7 +42,9 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
       <div className="p-6 bg-white rounded-lg w-96">
         <h2 className="mb-4 text-xl font-bold">Add New Task</h2>
 
+        <label className="block mb-1" htmlFor="taskContent">Task Content</label>
         <input
+          id="taskContent"
           type="text"
           placeholder="Task Content"
           value={taskContent}
@@ -36,7 +52,9 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
           className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:border-black"
         />
 
+        <label className="block mb-1" htmlFor="assignee">Assignee</label>
         <input
+          id="assignee"
           type="text"
           placeholder="Assignee"
           value={assignee}
@@ -44,7 +62,9 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
           className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:border-black"
         />
 
+        <label className="block mb-1" htmlFor="reward">Reward (USDC)</label>
         <input
+          id="reward"
           type="number"
           placeholder="Reward (USDC)"
           value={reward}
@@ -54,10 +74,10 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
 
         <div className="flex justify-end space-x-2">
           <button
-              onClick={handleSave}
-              className="px-3 py-1 text-white duration-100 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black"
-            >
-              Save Task
+            onClick={handleSave}
+            className="px-3 py-1 text-white duration-100 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black"
+          >
+            Save Task
           </button>
           <button
             onClick={onClose}
