@@ -1,3 +1,4 @@
+import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import { connectWallet, getStationContract, createTaskOnContract, startTaskOnContract, completeTaskOnContract } from '../utils/contractUtils'
@@ -10,7 +11,6 @@ interface Task {
   assignee?: string
   reward?: number
 }
-
 interface TasksState {
   todo: Task[]
   doing: Task[]
