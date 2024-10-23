@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (task: { taskContent: string, assignee: string, reward: number }) => void;
+  onSave: (task: { taskContent: string; assignee: string; reward: number }) => void;
 }
 
 export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
@@ -26,7 +26,7 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
     }
 
     // Convert reward to the smallest unit (6 decimals)
-    const rewardInSmallestUnit = reward * 1e6; // Multiply by 1,000,000
+    const rewardInSmallestUnit = ethers.utils.parseUnits(reward.toString(), 6); // Convert to 6 decimals
 
     onSave({ taskContent, assignee, reward: rewardInSmallestUnit });
     setTaskContent('');
