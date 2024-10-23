@@ -1,195 +1,197 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
-import { connectWallet, getStationContract, createTaskOnContract, startTaskOnContract, completeTaskOnContract } from '../utils/contractUtils'
-import Header from '../components/Header'
-import Modal from '../components/Modal'
+import { ethers } from 'ethers';
+import { useEffect, useState } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { connectWallet, getStationContract, createTaskOnContract, startTaskOnContract, completeTaskOnContract } from '../utils/contractUtils';
+import Header from '../components/Header';
+import Modal from '../components/Modal';
 
 interface Task {
-  id: string
-  content: string
-  assignee?: string
-  reward?: number
+  id: string;
+  content: string;
+  assignee?: string;
+  reward?: number;
 }
 
 interface TasksState {
-  todo: Task[]
-  doing: Task[]
-  done: Task[]
+  todo: Task[];
+  doing: Task[];
+  done: Task[];
 }
 
 const initialTasks: TasksState = {
   todo: [],
   doing: [],
   done: [],
-}
+};
 
 export default function Home() {
-  const [tasks, setTasks] = useState<TasksState>(initialTasks)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [contract, setContract] = useState<ethers.Contract | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [statusMessage, setStatusMessage] = useState<string>('')
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
-  const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
-  const [adminAddress, setAdminAddress] = useState<string | null>(null)
+  const [tasks, setTasks] = useState<TasksState>(initialTasks);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [contract, setContract] = useState<ethers.Contract | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
+  const [connectedAddress, setConnectedAddress] = useState<string | null>(null);
+  const [adminAddress, setAdminAddress] = useState<string | null>(null);
 
   const connectUserWallet = async () => {
-    const wallet = await connectWallet()
+    const wallet = await connectWallet();
     if (wallet?.signer) {
-      const stationContract = getStationContract(wallet.signer)
+      const stationContract = getStationContract(wallet.signer);
       if (stationContract) {
-        setContract(stationContract)
-        setIsWalletConnected(true)
+        setContract(stationContract);
+        setIsWalletConnected(true);
 
-        const address = await wallet.signer.getAddress()
-        setConnectedAddress(address)
+        const address = await wallet.signer.getAddress();
+        setConnectedAddress(address);
 
         // Fetch and set admin address from the contract
-        const ownerAddress = await stationContract.owner()
-        setAdminAddress(ownerAddress)
+        const ownerAddress = await stationContract.owner();
+        setAdminAddress(ownerAddress);
 
-        await fetchTasks(stationContract, address, ownerAddress)
+        await fetchTasks(stationContract, address, ownerAddress);
       }
     } else {
-      setIsWalletConnected(false)
-      setConnectedAddress(null)
-      console.error('Failed to connect wallet.')
+      setIsWalletConnected(false);
+      setConnectedAddress(null);
+      console.error('Failed to connect wallet.');
     }
-  }
+  };
 
   useEffect(() => {
     const checkInitialConnection = async () => {
-      const wallet = await connectWallet()
+      const wallet = await connectWallet();
       if (wallet?.signer) {
-        const stationContract = getStationContract(wallet.signer)
+        const stationContract = getStationContract(wallet.signer);
         if (stationContract) {
-          setContract(stationContract)
-          setIsWalletConnected(true)
+          setContract(stationContract);
+          setIsWalletConnected(true);
 
-          const address = await wallet.signer.getAddress()
-          setConnectedAddress(address)
+          const address = await wallet.signer.getAddress();
+          setConnectedAddress(address);
 
           // Fetch and set admin address from the contract
-          const ownerAddress = await stationContract.owner()
-          setAdminAddress(ownerAddress)
+          const ownerAddress = await stationContract.owner();
+          setAdminAddress(ownerAddress);
 
-          await fetchTasks(stationContract, address, ownerAddress)
+          await fetchTasks(stationContract, address, ownerAddress);
         }
       }
-    }
-    checkInitialConnection()
-  }, [])
+    };
+    checkInitialConnection();
+  }, []);
 
   const fetchTasks = async (contract: ethers.Contract, userAddress: string, ownerAddress: string) => {
     try {
-      const totalTasks = await contract.taskCount()
-      const fetchedTasks: TasksState = { todo: [], doing: [], done: [] }
+      const totalTasks = await contract.taskCount();
+      const fetchedTasks: TasksState = { todo: [], doing: [], done: [] };
 
       for (let i = 0; i < totalTasks; i++) {
-        const task = await contract.tasks(i)
+        const task = await contract.tasks(i);
         const taskData: Task = {
           id: i.toString(),
           content: task.description,
           assignee: task.assignee,
           reward: parseFloat(ethers.utils.formatUnits(task.reward, 6)),
-        }
+        };
 
         // Allow both admin and assignee to see the tasks
         if (task.assignee.toLowerCase() === userAddress.toLowerCase() || userAddress.toLowerCase() === ownerAddress.toLowerCase()) {
-          if (task.status === 0) fetchedTasks.todo.push(taskData)
-          else if (task.status === 1) fetchedTasks.doing.push(taskData)
-          else if (task.status === 2) fetchedTasks.done.push(taskData)
+          if (task.status === 0) fetchedTasks.todo.push(taskData);
+          else if (task.status === 1) fetchedTasks.doing.push(taskData);
+          else if (task.status === 2) fetchedTasks.done.push(taskData);
         }
       }
 
-      setTasks(fetchedTasks)
-      console.log('Tasks fetched:', fetchedTasks)
+      setTasks(fetchedTasks);
+      console.log('Tasks fetched:', fetchedTasks);
     } catch (error) {
-      console.error('Error fetching tasks:', error)
+      console.error('Error fetching tasks:', error);
     }
-  }
+  };
 
   const onDragEnd = async (result: DropResult) => {
-    const { source, destination } = result
-    if (!destination) return
+    const { source, destination } = result;
+    if (!destination) return;
 
-    const sourceColumn = tasks[source.droppableId as keyof TasksState]
-    const destColumn = tasks[destination.droppableId as keyof TasksState]
-    const [removed] = sourceColumn.splice(source.index, 1)
-    destColumn.splice(destination.index, 0, removed)
+    const sourceColumn = tasks[source.droppableId as keyof TasksState];
+    const destColumn = tasks[destination.droppableId as keyof TasksState];
+    const [removed] = sourceColumn.splice(source.index, 1);
+    destColumn.splice(destination.index, 0, removed);
 
     setTasks({
       ...tasks,
       [source.droppableId]: sourceColumn,
       [destination.droppableId]: destColumn,
-    })
+    });
 
     if (destination.droppableId === 'doing' && contract) {
-      setLoading(true)
-      setStatusMessage('Starting the task...')
+      setLoading(true);
+      setStatusMessage('Starting the task...');
       try {
-        await startTaskOnContract(contract, parseInt(removed.id, 10))
-        setStatusMessage('Task moved to Doing!')
+        await startTaskOnContract(contract, parseInt(removed.id, 10));
+        setStatusMessage('Task moved to Doing!');
       } catch (error) {
-        setStatusMessage('Failed to move task to Doing.')
-        console.error('Error starting task:', error)
+        setStatusMessage('Failed to move task to Doing.');
+        console.error('Error starting task:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
     if (destination.droppableId === 'done' && contract) {
-      setLoading(true)
-      setStatusMessage('Completing the task...')
+      setLoading(true);
+      setStatusMessage('Completing the task...');
       try {
         // Check if the connected address is the assignee
         if (removed.assignee?.toLowerCase() === connectedAddress?.toLowerCase()) {
           console.log('Attempting to complete task with ID:', removed.id); // Debugging line
+          const task = await contract.tasks(parseInt(removed.id, 10));
+          console.log('Current task status:', task.status.toString()); // Log current status
           await completeTaskOnContract(contract, parseInt(removed.id, 10));
-          setStatusMessage('Task marked as complete!')
+          setStatusMessage('Task marked as complete!');
         } else {
           setStatusMessage('Only the assignee can complete the task.');
         }
       } catch (error) {
-        setStatusMessage('Failed to complete the task.')
-        console.error('Error completing task:', error)
+        setStatusMessage('Failed to complete the task.');
+        console.error('Error completing task:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  }
+  };
 
   const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
     setTasks({
       ...tasks,
       [columnId]: tasks[columnId].filter((task) => task.id !== taskId),
-    })
-  }
+    });
+  };
 
   const handleSaveTask = async (task: { taskContent: string, assignee: string, reward: number }) => {
     if (!contract) {
-      setStatusMessage('Please connect your wallet to create a task.')
-      return
+      setStatusMessage('Please connect your wallet to create a task.');
+      return;
     }
 
-    const { taskContent, assignee, reward } = task
-    setLoading(true)
-    setStatusMessage('Creating task...')
+    const { taskContent, assignee, reward } = task;
+    setLoading(true);
+    setStatusMessage('Creating task...');
 
     try {
-      await createTaskOnContract(contract, taskContent, assignee, reward)
-      setStatusMessage('Task created successfully!')
+      await createTaskOnContract(contract, taskContent, assignee, reward);
+      setStatusMessage('Task created successfully!');
       await fetchTasks(contract, connectedAddress || '', adminAddress || '');
     } catch (error) {
-      setStatusMessage('Failed to create task.')
-      console.error('Error creating task:', error)
+      setStatusMessage('Failed to create task.');
+      console.error('Error creating task:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const isButtonDisabled = !isWalletConnected || loading
+  const isButtonDisabled = !isWalletConnected || loading;
 
   return (
     <>
@@ -204,7 +206,7 @@ export default function Home() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {['To Do', 'Doing', 'Done'].map((columnTitle, index) => {
-              const columnId = ['todo', 'doing', 'done'][index] as keyof TasksState
+              const columnId = ['todo', 'doing', 'done'][index] as keyof TasksState;
 
               return (
                 <div key={columnId}>
@@ -248,7 +250,7 @@ export default function Home() {
                     )}
                   </Droppable>
                 </div>
-              )
+              );
             })}
           </div>
         </DragDropContext>
@@ -260,5 +262,5 @@ export default function Home() {
         onSave={handleSaveTask}
       />
     </>
-  )
+  );
 }
