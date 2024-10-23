@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
     "module": "commonjs",
+    "strict": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "ES2020",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
@@ -15,17 +19,21 @@
       "*": ["node_modules/*"],
       "@/*": ["./*"]
     },
-    "lib": ["dom", "dom.iterable", "es2020"], 
+    "lib": ["dom", "dom.iterable", "es2020"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": false,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": false,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
+    "noEmit": true,
     "jsx": "preserve",
     "incremental": true
   },
-  "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/index.tsx", "pages/test.mdx"]
+  "include": [
+    "hardhat.config.ts",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages",
+    "contracts",
+    "scripts",
+    "test"
+  ],
+  "exclude": ["node_modules"]
 }
