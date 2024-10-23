@@ -88,11 +88,11 @@ contract Station {
     }
 
     /// @notice Creates a new task
-    /// @dev Only the owner can create a new task, rewards should be specified in USDC (6 decimals)
+    /// @dev Any user can create a new task, rewards should be specified in USDC (6 decimals)
     /// @param description The description of the task
     /// @param assignee The address of the user assigned to the task
     /// @param reward The reward amount in USDC for completing the task (expected in smallest unit, i.e., 6 decimals)
-    function createTask(string memory description, address assignee, uint256 reward) public onlyOwner {
+    function createTask(string memory description, address assignee, uint256 reward) public {
         require(reward > 0, "Reward must be greater than zero");
         tasks[taskCount] = Task(description, assignee, reward * 1e6, TaskStatus.Todo); // Adjust for 6 decimals
         emit TaskCreated(taskCount, description, assignee, reward * 1e6);

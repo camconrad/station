@@ -16,7 +16,7 @@ Station is an automated task compensation software that streamlines workplace co
 
 | Contract       | Address       |
 | -------------  | ------------- |
-| Station      | [0x46C4DC3785c8baD38DDBfB6fAB61fBe0833B5f9A](https://arbiscan.io/address/0x46c4dc3785c8bad38ddbfb6fab61fbe0833b5f9a) |
+| Station      | [0x952Ae816Cc618a76942730c4112A93e99CcDa56c](https://arbiscan.io/address/0x952Ae816Cc618a76942730c4112A93e99CcDa56c) |
 | USD Coin      | [0xaf88d065e77c8cC2239327C5EDb3A432268e5831](https://arbiscan.io/token/0xaf88d065e77c8cc2239327c5edb3a432268e5831) |
 
 ## Getting Started
