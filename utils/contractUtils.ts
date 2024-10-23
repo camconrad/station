@@ -69,15 +69,31 @@ export const startTaskOnContract = async (contract: ethers.Contract, taskId: num
 // Complete task on the contract
 export const completeTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
   try {
+    // Fetch the task details
     const task = await contract.tasks(taskId);
     const rewardAmount = task.reward;
 
     console.log('Reward amount to transfer:', ethers.utils.formatUnits(rewardAmount, 6));
 
+    // Check the USDC balance of the contract
+    const contractBalance = await contract.USDC(); // Get the USDC address from your contract if needed
+    const balance = await IERC20(contract.USDC()).balanceOf(contract.address);
+    
+    console.log('Contract USDC balance:', ethers.utils.formatUnits(balance, 6));
+
+    // Ensure the contract has enough USDC to transfer
+    if (balance.lt(rewardAmount)) {
+      throw new Error('Insufficient USDC balance in contract to complete the task');
+    }
+
+    // Estimate gas for the transaction
     const gasEstimate = await contract.estimateGas.completeTask(taskId);
+    
+    // Execute the task completion
     const tx = await contract.completeTask(taskId, {
       gasLimit: gasEstimate.add(gasEstimate.div(10)), // Add a 10% buffer to the estimated gas limit
     });
+
     console.log('Transaction sent:', tx.hash);
     await tx.wait();
     console.log('Task completed:', tx);
