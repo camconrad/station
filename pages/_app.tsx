@@ -5,6 +5,8 @@ import { mainnet, polygon, optimism, arbitrum } from 'wagmi/chains'
 import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc'
 import { EthereumClient, w3mConnectors } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
+import { DefaultSeo } from 'next-seo'
+import SEO from '../next-seo.config'
 
 const chains = [mainnet, polygon, optimism, arbitrum]
 const projectId = '02a231b2406ed316c861abefc95c5e59'
@@ -38,10 +40,13 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains)
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <Component {...pageProps} />
-      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
-    </WagmiConfig>
+    <>
+      <DefaultSeo {...SEO} />
+      <WagmiConfig config={wagmiConfig}>
+        <Component {...pageProps} />
+        <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+      </WagmiConfig>
+    </>
   )
 }
 
