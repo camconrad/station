@@ -21,7 +21,7 @@ Station is an automated task compensation software that streamlines workplace co
 
 ## Demonstration
 
-[Watch the Demo](./public/demo.mp4)
+[Watch Demo on YouTube]([https://www.youtube.com/watch?v=A7WWU7aZqnE)
 
 ## Explainer
 
