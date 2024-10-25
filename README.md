@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cdn.prod.website-files.com/671597a7dd56e19ff494a076/671937bc3e52a4384fb98be8_station-icon.png" alt="Station Logo" width=13.4%>
+  <img src="https://cdn.prod.website-files.com/671597a7dd56e19ff494a076/671b8da132502896ff139a7d_icon.png" alt="Station Logo" width=13.4%>
 </p>
 <p align="center">
   <i align="center">Station dApp and Smart Contracts</i>
