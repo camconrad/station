@@ -70,7 +70,7 @@ Run the Station project locally by following these commands:
 
 ```bash
 # Clone the repository
-git clone https://github.com/camconrad/station-collabtech
+git clone https://github.com/camconrad/station
 
 # Navigate into the directory
 cd station_dapp
