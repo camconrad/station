@@ -14,7 +14,7 @@ Station is an automated task compensation software that streamlines workplace co
 
 ## Deployments
 
-| Contract       | Address       |
+| Network       | Address       |
 | -------------  | ------------- |
 | Arbitrum      | [0xc82480693692c443e4d4dc5fa5bC6496A4cac865](https://arbiscan.io/address/0xc82480693692c443e4d4dc5fa5bC6496A4cac865) |
 
