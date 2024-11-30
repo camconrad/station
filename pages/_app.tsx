@@ -7,17 +7,17 @@ import { Web3Modal } from '@web3modal/react'
 import { DefaultSeo } from 'next-seo'
 import SEO from '../next-seo.config'
 
-// Web3Modal project ID
 const projectId = '02a231b2406ed316c861abefc95c5e59'
 
-// Configure Wagmi with a dynamic provider
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains: [] }), // Empty chains; rely on wallet's connected chain
+  connectors: w3mConnectors({ projectId, chains: [] }),
   publicClient: jsonRpcProvider({
     rpc: (chain) => {
-      console.log('Detected chain ID:', chain.id); // Debug chain ID
-      return null; // Wallet-provided RPC will be used
+      if (!chain) return null;
+      return {
+        http: `https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID`, // add ID later
+      }
     },
   }),
 })
