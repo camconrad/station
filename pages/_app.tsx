@@ -6,12 +6,13 @@ import { Web3Modal } from '@web3modal/react'
 import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc'
 import { DefaultSeo } from 'next-seo'
 import SEO from '../next-seo.config'
+import { Chain } from 'wagmi/chains'
 
 // Web3Modal project ID
 const projectId = '02a231b2406ed316c861abefc95c5e59'
 
 // Supported chains (use empty array for dynamic chain handling)
-const supportedChains = []
+const supportedChains: Chain[] = []
 
 // Configure Wagmi with jsonRpcProvider
 const { publicClient } = configureChains(supportedChains, [
@@ -21,7 +22,7 @@ const { publicClient } = configureChains(supportedChains, [
         console.warn('Chain is undefined in RPC configuration') // Debugging for undefined chains
         return null
       }
-      return { http: `https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID` } // Replace with actual Infura ID
+      return { http: `https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID` } // Replace later
     },
   }),
 ])
