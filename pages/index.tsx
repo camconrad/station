@@ -47,7 +47,6 @@ export default function Home() {
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
   const [adminAddress, setAdminAddress] = useState<string | null>(null)
 
-  // Connect user wallet and fetch contract
   const connectUserWallet = async () => {
     const wallet = await connectWallet()
     if (wallet?.signer) {
@@ -56,7 +55,6 @@ export default function Home() {
         const network = await provider.getNetwork()
         console.log('Connected network:', network)
 
-        // Map chainId to network name
         const networkName = chainIdToNetwork[network.chainId]
         if (!networkName) {
           throw new Error(`Unsupported chainId: ${network.chainId}`)
@@ -91,7 +89,6 @@ export default function Home() {
     connectUserWallet()
   }, [])
 
-  // Fetch tasks
   const fetchTasks = async (contract: ethers.Contract, userAddress: string) => {
     try {
       const totalTasks = await contract.taskCount()
@@ -124,7 +121,6 @@ export default function Home() {
     }
   }
 
-  // Handle drag-and-drop logic
   const onDragEnd = async (result: DropResult) => {
     const { source, destination } = result
     if (!destination) return
@@ -159,7 +155,15 @@ export default function Home() {
       setStatusMessage('Completing the task...')
       try {
         if (removed.assignee?.toLowerCase() === connectedAddress?.toLowerCase()) {
-          await completeTaskOnContract(contract, parseInt(removed.id, 10))
+          const provider = contract.provider as ethers.providers.Web3Provider
+          const network = await provider.getNetwork()
+          const networkName = chainIdToNetwork[network.chainId]
+
+          if (!networkName) {
+            throw new Error(`Unsupported chainId: ${network.chainId}`)
+          }
+
+          await completeTaskOnContract(contract, parseInt(removed.id, 10), networkName)
           setStatusMessage('Task marked as complete!')
         } else {
           setStatusMessage('Only the assignee can complete the task.')
@@ -173,7 +177,6 @@ export default function Home() {
     }
   }
 
-  // Handle task deletion
   const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
     setTasks({
       ...tasks,
@@ -181,7 +184,6 @@ export default function Home() {
     })
   }
 
-  // Handle task saving
   const handleSaveTask = async (task: { taskContent: string; assignee: string; reward: number }) => {
     if (!contract) {
       setStatusMessage('Please connect your wallet to create a task.')
