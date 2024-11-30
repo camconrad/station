@@ -10,25 +10,31 @@ import SEO from '../next-seo.config'
 // Web3Modal project ID
 const projectId = '02a231b2406ed316c861abefc95c5e59'
 
-// Configure a basic chain provider with default handling
-const { publicClient } = configureChains([], [
+// Supported chains (use empty array for dynamic chain handling)
+const supportedChains = []
+
+// Configure Wagmi with jsonRpcProvider
+const { publicClient } = configureChains(supportedChains, [
   jsonRpcProvider({
     rpc: (chain) => {
-      if (!chain) return null // Handle undefined chain
-      return { http: `https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID` } // Default for testing
+      if (!chain) {
+        console.warn('Chain is undefined in RPC configuration') // Debugging for undefined chains
+        return null
+      }
+      return { http: `https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID` } // Replace with actual Infura ID
     },
   }),
 ])
 
-// Configure Wagmi with required properties
+// Create Wagmi configuration
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains: [] }), // Wallet handles the connected chain
-  publicClient, // Required property for PublicClient
+  connectors: w3mConnectors({ projectId, chains: supportedChains }), // Empty array for dynamic chains
+  publicClient, // Dynamically connect to wallet's provided chain
 })
 
-// Initialize EthereumClient
-const ethereumClient = new EthereumClient(wagmiConfig, [])
+// Initialize EthereumClient for Web3Modal
+const ethereumClient = new EthereumClient(wagmiConfig, supportedChains)
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
