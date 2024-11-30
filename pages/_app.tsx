@@ -1,41 +1,51 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { WagmiConfig, createConfig, configureChains } from 'wagmi'
+import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { EthereumClient, w3mConnectors } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc'
 import { DefaultSeo } from 'next-seo'
 import SEO from '../next-seo.config'
-import { Chain } from 'wagmi/chains'
 
 // Web3Modal project ID
 const projectId = '02a231b2406ed316c861abefc95c5e59'
 
-// Supported chains (use empty array for dynamic chain handling)
-const supportedChains: Chain[] = []
+// Satisfy `configureChains`
+const placeholderChain = {
+  id: 1, // Mainnet ID
+  name: 'Ethereum Mainnet',
+  network: 'mainnet',
+  rpcUrls: {
+    default: {
+      http: ['https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID'], // Replace later
+    },
+  },
+  nativeCurrency: {
+    name: 'Ether',
+    symbol: 'ETH',
+    decimals: 18,
+  },
+}
 
-// Configure Wagmi with jsonRpcProvider
-const { publicClient } = configureChains(supportedChains, [
+// Configure chains with a placeholder to avoid build errors
+const { publicClient } = configureChains([placeholderChain], [
   jsonRpcProvider({
     rpc: (chain) => {
-      if (!chain) {
-        console.warn('Chain is undefined in RPC configuration') // Debugging for undefined chains
-        return null
-      }
+      if (!chain) return null
       return { http: `https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID` } // Replace later
     },
   }),
 ])
 
-// Create Wagmi configuration
+// Configure Wagmi
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains: supportedChains }), // Empty array for dynamic chains
-  publicClient, // Dynamically connect to wallet's provided chain
+  connectors: w3mConnectors({ projectId, chains: [placeholderChain] }), // Placeholder chain
+  publicClient, // Required for proper operation
 })
 
-// Initialize EthereumClient for Web3Modal
-const ethereumClient = new EthereumClient(wagmiConfig, supportedChains)
+// Initialize EthereumClient
+const ethereumClient = new EthereumClient(wagmiConfig, [placeholderChain])
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
