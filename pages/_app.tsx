@@ -9,14 +9,10 @@ import SEO from '../next-seo.config'
 // Web3Modal project ID
 const projectId = '02a231b2406ed316c861abefc95c5e59'
 
-// Configure Wagmi with default settings
+// Configure Wagmi without defining chains explicitly
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains: [] }), // Wallet decides connected chain
-  publicClient: (config) => {
-    console.log('PublicClient requested for chain:', config.chainId); // Debugging
-    return null; // Rely on wallet-provided RPC
-  },
+  connectors: w3mConnectors({ projectId, chains: [] }), // Let wallet provide connected chain
 })
 
 // Initialize EthereumClient
