@@ -65,16 +65,16 @@ export default function Modal({ isOpen, onClose, onSave }: ModalProps) {
 
         <div className="flex justify-end space-x-2">
           <button
-            onClick={handleSave}
-            className="px-3 py-1 text-white duration-100 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black"
-          >
-            Save Task
-          </button>
-          <button
             onClick={onClose}
             className="px-3 py-1 text-white duration-100 ease-linear bg-gray-400 rounded-full hover:bg-gray-300"
           >
             Close
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-3 py-1 text-white duration-100 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black"
+          >
+            Save Task
           </button>
         </div>
       </div>

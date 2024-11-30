@@ -7,8 +7,13 @@ const ERC20_ABI = [
   "function transfer(address to, uint256 amount) returns (bool)",
 ];
 
-const STATION_ADDRESS = '0xc82480693692c443e4d4dc5fa5bC6496A4cac865';
-const USDC_ADDRESS = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
+// Arbitrum constants
+const STATION_ADDRESS_ARBITRUM = '0xc82480693692c443e4d4dc5fa5bC6496A4cac865';
+const USDC_ADDRESS_ARBITRUM = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
+
+// Skale constants
+const STATION_ADDRESS_SKALE = '0xf350c26f76cdbcef6c9a145040f31bfaa7074171';
+const USDC_ADDRESS_SKALE = '0x2aebcdc4F9f9149a50422Fff86198Cb0939Ea165';
 
 // Connect to wallet
 export const connectWallet = async () => {
@@ -30,19 +35,34 @@ export const connectWallet = async () => {
 };
 
 // Get Station contract instance
-export const getStationContract = (signerOrProvider: ethers.Signer | ethers.providers.Provider) => {
+export const getStationContract = (
+  signerOrProvider: ethers.Signer | ethers.providers.Provider,
+  network: 'ARBITRUM' | 'SKALE'
+) => {
   if (!signerOrProvider) return null;
-  return new ethers.Contract(STATION_ADDRESS, StationABI, signerOrProvider);
+  const address =
+    network === 'ARBITRUM' ? STATION_ADDRESS_ARBITRUM : STATION_ADDRESS_SKALE;
+  return new ethers.Contract(address, StationABI, signerOrProvider);
 };
 
 // Get USDC contract instance
-export const getUSDCContract = (signerOrProvider: ethers.Signer | ethers.providers.Provider) => {
+export const getUSDCContract = (
+  signerOrProvider: ethers.Signer | ethers.providers.Provider,
+  network: 'ARBITRUM' | 'SKALE'
+) => {
   if (!signerOrProvider) return null;
-  return new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signerOrProvider);
+  const address =
+    network === 'ARBITRUM' ? USDC_ADDRESS_ARBITRUM : USDC_ADDRESS_SKALE;
+  return new ethers.Contract(address, ERC20_ABI, signerOrProvider);
 };
 
 // Create task on the contract
-export const createTaskOnContract = async (contract: ethers.Contract, description: string, assignee: string, reward: ethers.BigNumber) => {
+export const createTaskOnContract = async (
+  contract: ethers.Contract,
+  description: string,
+  assignee: string,
+  reward: ethers.BigNumber
+) => {
   try {
     const tx = await contract.createTask(description, assignee, reward);
     console.log('Transaction sent:', tx.hash);
@@ -55,7 +75,10 @@ export const createTaskOnContract = async (contract: ethers.Contract, descriptio
 };
 
 // Start task on the contract
-export const startTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
+export const startTaskOnContract = async (
+  contract: ethers.Contract,
+  taskId: number
+) => {
   try {
     const tx = await contract.startTask(taskId);
     console.log('Transaction sent:', tx.hash);
@@ -68,7 +91,11 @@ export const startTaskOnContract = async (contract: ethers.Contract, taskId: num
 };
 
 // Complete task on the contract
-export const completeTaskOnContract = async (contract: ethers.Contract, taskId: number) => {
+export const completeTaskOnContract = async (
+  contract: ethers.Contract,
+  taskId: number,
+  network: 'ARBITRUM' | 'SKALE'
+) => {
   try {
     // Fetch the task details
     const task = await contract.tasks(taskId);
@@ -77,7 +104,7 @@ export const completeTaskOnContract = async (contract: ethers.Contract, taskId: 
     console.log('Reward amount to transfer:', ethers.utils.formatUnits(rewardAmount, 6));
 
     // Get USDC contract instance
-    const usdcContract = getUSDCContract(contract.provider);
+    const usdcContract = getUSDCContract(contract.provider, network);
 
     // Check if the USDC contract instance is valid
     if (!usdcContract) {
@@ -86,7 +113,7 @@ export const completeTaskOnContract = async (contract: ethers.Contract, taskId: 
 
     // Check the USDC balance of the contract
     const balance = await usdcContract.balanceOf(contract.address);
-    
+
     console.log('Contract USDC balance:', ethers.utils.formatUnits(balance, 6));
 
     // Ensure the contract has enough USDC to transfer
@@ -96,7 +123,7 @@ export const completeTaskOnContract = async (contract: ethers.Contract, taskId: 
 
     // Estimate gas for the transaction
     const gasEstimate = await contract.estimateGas.completeTask(taskId);
-    
+
     // Execute the task completion
     const tx = await contract.completeTask(taskId, {
       gasLimit: gasEstimate.add(gasEstimate.div(10)), // Add a 10% buffer to the estimated gas limit

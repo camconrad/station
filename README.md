@@ -6,7 +6,7 @@
 </p>
 
 ## Overview
-Station is an automated task compensation software that streamlines workplace collaboration. It facilitates communication, assignments, and on-demand payouts in USD Coin (USDC) on Arbitrum One, triggered when a task is moved from "Doing" to "Done", ensuring timely compensation for completed work.
+Station is an automated task compensation software that streamlines workplace collaboration. It facilitates communication, assignments, and on-demand payouts in USD Coin (USDC), triggered when a task is moved from "Doing" to "Done", ensuring timely compensation for completed work.
 
 - **Website**: [station.finance](https://station.finance)
 - **X (Twitter)**: [x.com/0xStation_](https://x.com/0xStation_)
@@ -14,19 +14,10 @@ Station is an automated task compensation software that streamlines workplace co
 
 ## Deployments
 
-| Network       | Address       |
+| Network        | Address       |
 | -------------  | ------------- |
-| Arbitrum      | [0xc82480693692c443e4d4dc5fa5bC6496A4cac865](https://arbiscan.io/address/0xc82480693692c443e4d4dc5fa5bC6496A4cac865) |
-
-More deployments coming soon! Follow us on [X (Twitter)](https://x.com/0xStation_) ⚡️
-
-## Demonstration
-
-[Watch on YouTube](https://www.youtube.com/watch?v=A7WWU7aZqnE)
-
-## Feedback
-
-[Complete the form](https://forms.gle/EobUkAR5ATgbQSnY9)
+| Arbitrum One   | [0xc82480693692c443e4d4dc5fa5bC6496A4cac865](https://arbiscan.io/address/0xc82480693692c443e4d4dc5fa5bC6496A4cac865) |
+| Skale Calypso Hub   | [0xf350c26f76cdbcef6c9a145040f31bfaa7074171](https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/address/0xF350c26F76CdbCEF6C9a145040f31BfAa7074171) |
 
 ## Explainer
 
@@ -63,6 +54,14 @@ To use the interface, follow these simple steps:
    - The contract verifies the task status and transfers the specified USDC reward to the assignee.
 4. **Managing Tasks**
    - Admins can monitor all tasks and their statuses using the interface.
+
+## Demonstration
+
+[Watch on YouTube](https://www.youtube.com/watch?v=A7WWU7aZqnE)
+
+## Feedback
+
+[Complete the form](https://forms.gle/EobUkAR5ATgbQSnY9)
 
 ## Installation
 
