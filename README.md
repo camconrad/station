@@ -33,7 +33,7 @@ To use the interface, follow these simple steps:
 
 2. **Choose Your Action**
    - **Task Management**: Create and assign tasks. Label to communicate requirements.
-   - **Collaboration**: Track progress as assignees move tasks from "To Do" to "Doing" and "Doing" to "Done".
+   - **Collaboration**: Track progress as tasks are moved from "To Do" to "Doing" and "Doing" to "Done".
    - **Compensation**: Configure payouts to automate compensation for completed tasks.
 
 3. **Monitor and Manage**
