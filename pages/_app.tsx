@@ -1,25 +1,22 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { WagmiConfig, createConfig } from 'wagmi'
-import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc'
 import { EthereumClient, w3mConnectors } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 import { DefaultSeo } from 'next-seo'
 import SEO from '../next-seo.config'
 
+// Web3Modal project ID
 const projectId = '02a231b2406ed316c861abefc95c5e59'
 
+// Configure Wagmi with default settings
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains: [] }),
-  publicClient: jsonRpcProvider({
-    rpc: (chain) => {
-      if (!chain) return null;
-      return {
-        http: `https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID`, // add ID later
-      }
-    },
-  }),
+  connectors: w3mConnectors({ projectId, chains: [] }), // Wallet decides connected chain
+  publicClient: (config) => {
+    console.log('PublicClient requested for chain:', config.chainId); // Debugging
+    return null; // Rely on wallet-provided RPC
+  },
 })
 
 // Initialize EthereumClient
