@@ -57,10 +57,12 @@ export default function Home() {
           if (networkName) {
             const signer = provider.getSigner()
             const stationContract = getStationContract(signer, networkName)
-            setContract(stationContract)
-            setIsWalletConnected(true)
-            setConnectedAddress(address)
-            await fetchTasks(stationContract, address)
+            if (stationContract) {
+              setContract(stationContract)
+              setIsWalletConnected(true)
+              setConnectedAddress(address)
+              await fetchTasks(stationContract, address)
+            }
           }
         }
       }
