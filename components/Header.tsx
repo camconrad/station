@@ -4,7 +4,6 @@ import { ethers } from 'ethers'
 import { connectWallet, getStationContract } from '../utils/contractUtils'
 import FundModal from '../components/FundModal'
 import { shortenAddress } from '../utils/helpers'
-import { FiLogOut } from 'react-icons/fi'
 
 const CONTRACT_ADDRESSES = {
   ARBITRUM: '0x48DD7500887801bec355ba2cf6aA028E67a41638',
@@ -46,7 +45,9 @@ const Header = ({ isWalletConnected, connectedAddress, onWalletConnect }: Header
         }
 
         const rawBalance = await contract.getBalance()
+        console.log('Raw contract balance:', rawBalance.toString()) // Debugging
         const balance = ethers.utils.formatUnits(rawBalance, 6)
+        console.log('Formatted contract balance:', balance) // Debugging
         setContractBalance(parseFloat(balance))
 
         const address = await wallet.signer.getAddress()
@@ -87,7 +88,7 @@ const Header = ({ isWalletConnected, connectedAddress, onWalletConnect }: Header
             <div>
               <div className="text-[14px] text-[#959595]">Balance</div>
               <div className="font-regular mt-[-2px] text-[14px] text-[#030303]">
-                {contractBalance.toFixed(2)} USDC
+                {Number.isFinite(contractBalance) ? contractBalance.toFixed(2) : 'Loading...'} USDC
               </div>
             </div>
           </button>
