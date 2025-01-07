@@ -41,7 +41,7 @@ export default function FundModal({ isOpen, onClose, onSubmit, contractAddress }
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-20 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center mb-4 bg-gray-100 bg-opacity-20 backdrop-blur-md"
           onClick={handleBackdropClick}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

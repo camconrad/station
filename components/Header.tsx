@@ -102,7 +102,7 @@ const Header = ({ isWalletConnected, connectedAddress, onWalletConnect }: Header
               </div>
             ) : (
               <button
-                className="text-white cursor-pointer duration-200 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black px-4 py-[6px]"
+                className="text-white cursor-pointer duration-200 ease-linear bg-black border border-black rounded-full hover:bg-black/0 hover:text-black px-4 py-[6px]"
                 onClick={handleConnectWallet}
               >
                 Connect

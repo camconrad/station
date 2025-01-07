@@ -221,7 +221,7 @@ export default function Home() {
 
                         {columnId === 'todo' && (
                           <button
-                            className={`w-full p-2 mt-2 text-white bg-black border border-black rounded-lg ${!isWalletConnected ? 'cursor-not-allowed' : ''}`}
+                            className={`w-full p-2 mt-2 text-white bg-black border border-black rounded-lg hover:bg-black/0 duration-100 ease-linear transition-ease hover:text-black ${!isWalletConnected ? 'cursor-not-allowed' : ''}`}
                             onClick={() => setIsModalOpen(true)}
                             disabled={!isWalletConnected}
                           >
