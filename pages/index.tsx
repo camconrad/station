@@ -255,7 +255,7 @@ export default function Home() {
 
                         {columnId === 'todo' && (
                           <button
-                            className={`w-full p-2 mt-4 text-white duration-100 ease-linear bg-black border border-black rounded-lg hover:bg-transparent hover:text-black ${isButtonDisabled ? 'cursor-not-allowed' : ''}`}
+                            className={`w-full p-2 mt-2 text-white duration-200 ease-linear bg-black border border-black rounded-lg hover:bg-transparent hover:text-black ${isButtonDisabled ? 'cursor-not-allowed' : ''}`}
                             onClick={() => setIsModalOpen(true)}
                             disabled={isButtonDisabled}
                           >

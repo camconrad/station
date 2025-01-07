@@ -32,31 +32,44 @@ const Header = ({ onConnect, isWalletConnected, connectedAddress }: HeaderProps)
           <h2 className="ml-2 text-xl font-bold">Station</h2>
         </Link>
 
-        <div className="flex items-center space-x-4 text-[14px]">
-          {isWalletConnected && connectedAddress ? (
-            <Popover
-              placement="bottom-right"
-              content={
-                <div
-                  className="flex items-center cursor-pointer"
-                  onClick={handleDisconnect}
-                >
-                  Disconnect <FiLogOut className="ml-2" />
-                </div>
-              }
-            >
-              <div className="px-3 py-1 text-black border border-black rounded-full cursor-pointer">
-                {shortenAddress(connectedAddress)}
+        <div className="flex items-center justify-between">
+          <div className="mr-3 text-right">
+            {/* <div className="flex items-center justify-between"> */}
+              <div className="text-[14px] text-[#959595]">
+                Balance
               </div>
-            </Popover>
-          ) : (
-            <button
-              className="px-3 py-1 text-black border border-black rounded-full cursor-pointer"
-              onClick={onConnect}
-            >
-              Connect
-            </button>
-          )}
+              {/* <img src="/info.svg" alt="info" className="w-3"/> */}
+            {/* </div> */}
+            <div className="font-regular mt-[-2px] text-[14px] text-[#030303]">
+              0.00 USDC
+            </div>
+          </div>
+          <div className="flex items-center space-x-4 text-[14px]">
+            {isWalletConnected && connectedAddress ? (
+              <Popover
+                placement="bottom-right"
+                content={
+                  <div
+                    className="flex items-center gap-2 text-red-500 cursor-pointer hover:text-red-600"
+                    onClick={handleDisconnect}
+                  >
+                    Disconnect <FiLogOut />
+                  </div>
+                }
+              >
+                <div className="flex items-center px-4 py-2 text-white transition-all bg-black border border-black rounded-full cursor-pointer hover:bg-gray-800 hover:shadow-lg">
+                  <span className="truncate max-w-[120px]">{shortenAddress(connectedAddress)}</span>
+                </div>
+              </Popover>
+            ) : (
+              <button
+                className="text-white duration-200 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black px-4 py-[6px]"
+                onClick={onConnect}
+              >
+                Connect
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>
