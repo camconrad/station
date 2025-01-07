@@ -206,6 +206,7 @@ export default function Home() {
         isWalletConnected={isWalletConnected}
         connectedAddress={connectedAddress}
         onWalletConnect={(address, network) => {
+          console.log('onWalletConnect called with:', address, network)
           setConnectedAddress(address)
           setIsWalletConnected(!!address)
         }}
