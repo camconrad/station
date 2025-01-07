@@ -7,7 +7,7 @@ import { shortenAddress } from '../utils/helpers'
 import { FiLogOut } from 'react-icons/fi'
 
 const CONTRACT_ADDRESSES = {
-  ARBITRUM: '0xc82480693692c443e4d4dc5fa5bC6496A4cac865',
+  ARBITRUM: '0x48DD7500887801bec355ba2cf6aA028E67a41638',
   SKALE: '0xf350c26f76cdbcef6c9a145040f31bfaa7074171',
 }
 

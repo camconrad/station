@@ -10,6 +10,11 @@ interface IERC20 {
     /// @param amount The amount of tokens to transfer
     /// @return Returns true if the transfer was successful
     function transfer(address recipient, uint256 amount) external returns (bool);
+
+    /// @notice Returns the token balance of a specific account
+    /// @param account The address of the account
+    /// @return The token balance of the account
+    function balanceOf(address account) external view returns (uint256);
 }
 
 /// @title Station Contract
@@ -95,7 +100,7 @@ contract Station {
     /// @param reward The reward amount in USDC for completing the task (expected in smallest unit, i.e., 6 decimals)
     function createTask(string memory description, address assignee, uint256 reward) public {
         require(reward > 0, "Reward must be greater than zero");
-        tasks[taskCount] = Task(description, assignee, reward * 1e6, TaskStatus.Todo, msg.sender); // Adjust for 6 decimals and store creator
+        tasks[taskCount] = Task(description, assignee, reward * 1e6, TaskStatus.Todo, msg.sender);
         emit TaskCreated(taskCount, description, assignee, reward * 1e6);
         taskCount++;
     }
@@ -128,6 +133,12 @@ contract Station {
         require(newOwner != address(0), "New owner is the zero address");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
+    }
+
+    /// @notice Returns the USDC balance held by the contract
+    /// @return The USDC balance of the contract
+    function getBalance() public view returns (uint256) {
+        return IERC20(USDC).balanceOf(address(this));
     }
 
     /// @notice Fallback function to reject any ETH sent to the contract

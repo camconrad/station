@@ -16,7 +16,7 @@ Station is an automated task compensation software that streamlines workplace co
 
 | Network        | Address       |
 | -------------  | ------------- |
-| Arbitrum One   | [0xc82480693692c443e4d4dc5fa5bC6496A4cac865](https://arbiscan.io/address/0xc82480693692c443e4d4dc5fa5bC6496A4cac865) |
+| Arbitrum One   | [0x48DD7500887801bec355ba2cf6aA028E67a41638](https://arbiscan.io/address/0x48DD7500887801bec355ba2cf6aA028E67a41638) |
 | Skale Calypso Hub   | [0xf350c26f76cdbcef6c9a145040f31bfaa7074171](https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/address/0xF350c26F76CdbCEF6C9a145040f31BfAa7074171) |
 
 ## Explainer
