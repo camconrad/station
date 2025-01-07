@@ -31,19 +31,17 @@ const Header = ({ onConnect, isWalletConnected, connectedAddress }: HeaderProps)
           />
           <h2 className="ml-2 text-xl font-bold">Station</h2>
         </Link>
-
         <div className="flex items-center justify-between">
+          <Link href="/" className="">
           <div className="mr-3 text-right">
-            {/* <div className="flex items-center justify-between"> */}
               <div className="text-[14px] text-[#959595]">
                 Balance
               </div>
-              {/* <img src="/info.svg" alt="info" className="w-3"/> */}
-            {/* </div> */}
-            <div className="font-regular mt-[-2px] text-[14px] text-[#030303]">
-              0.00 USDC
-            </div>
+              <div className="font-regular mt-[-2px] text-[14px] text-[#030303]">
+                0.00 USDC
+              </div>
           </div>
+          </Link>
           <div className="flex items-center space-x-4 text-[14px]">
             {isWalletConnected && connectedAddress ? (
               <Popover

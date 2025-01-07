@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import {
   connectWallet,
@@ -48,12 +48,11 @@ export default function Home() {
   const [adminAddress, setAdminAddress] = useState<string | null>(null)
 
   const connectUserWallet = async () => {
-    const wallet = await connectWallet()
-    if (wallet?.signer) {
-      try {
+    try {
+      const wallet = await connectWallet()
+      if (wallet?.signer) {
         const provider = wallet.signer.provider as ethers.providers.Web3Provider
         const network = await provider.getNetwork()
-        console.log('Connected network:', network)
 
         const networkName = chainIdToNetwork[network.chainId]
         if (!networkName) {
@@ -61,7 +60,9 @@ export default function Home() {
         }
 
         const stationContract = getStationContract(wallet.signer, networkName)
-        if (!stationContract) throw new Error('Unsupported network or invalid contract address.')
+        if (!stationContract) {
+          throw new Error('Unsupported network or invalid contract address.')
+        }
 
         setContract(stationContract)
         setIsWalletConnected(true)
@@ -73,21 +74,15 @@ export default function Home() {
         setAdminAddress(ownerAddress)
 
         await fetchTasks(stationContract, address)
-      } catch (error) {
-        console.error('Error connecting wallet or fetching data:', error)
-        setIsWalletConnected(false)
-        setStatusMessage('Failed to connect wallet or contract.')
+      } else {
+        throw new Error('Wallet connection failed.')
       }
-    } else {
+    } catch (error) {
+      console.error('Error connecting wallet:', error)
       setIsWalletConnected(false)
       setConnectedAddress(null)
-      console.error('Wallet connection failed.')
     }
   }
-
-  useEffect(() => {
-    connectUserWallet()
-  }, [])
 
   const fetchTasks = async (contract: ethers.Contract, userAddress: string) => {
     try {
@@ -217,7 +212,7 @@ export default function Home() {
         connectedAddress={connectedAddress}
       />
       <div className="relative mt-16 container pt-4 pb-4 mx-auto max-w-[800px] px-3 md:px-0">
-        {loading && <div className="mb-4 text-center text-blue-500">{statusMessage}</div>}
+        {loading && statusMessage && <div className="mb-4 text-center text-blue-500">{statusMessage}</div>}
 
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
