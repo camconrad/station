@@ -1,8 +1,7 @@
 import { ethers } from 'ethers'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import {
-  connectWallet,
   getStationContract,
   createTaskOnContract,
   startTaskOnContract,
@@ -44,45 +43,33 @@ export default function Home() {
   const [statusMessage, setStatusMessage] = useState('')
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
-  const [adminAddress, setAdminAddress] = useState<string | null>(null)
 
-  const connectUserWallet = async () => {
-    try {
-      const wallet = await connectWallet()
-      if (wallet?.signer) {
-        const provider = wallet.signer.provider as ethers.providers.Web3Provider
-        const network = await provider.getNetwork()
+  // Effect to check if the wallet is already connected
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      const { ethereum } = window as any
+      if (ethereum) {
+        const accounts = await ethereum.request({ method: 'eth_accounts' })
+        if (accounts.length > 0) {
+          const address = accounts[0]
+          const provider = new ethers.providers.Web3Provider(ethereum)
+          const network = await provider.getNetwork()
+          const networkName = chainIdToNetwork[network.chainId]
 
-        const networkName = chainIdToNetwork[network.chainId]
-        if (!networkName) {
-          throw new Error(`Unsupported chainId: ${network.chainId}`)
+          if (networkName) {
+            const signer = provider.getSigner()
+            const stationContract = getStationContract(signer, networkName)
+            setContract(stationContract)
+            setIsWalletConnected(true)
+            setConnectedAddress(address)
+            await fetchTasks(stationContract, address)
+          }
         }
-
-        const stationContract = getStationContract(wallet.signer, networkName)
-        if (!stationContract) {
-          throw new Error('Unsupported network or invalid contract address.')
-        }
-
-        setContract(stationContract)
-        setIsWalletConnected(true)
-
-        const address = await wallet.signer.getAddress()
-        setConnectedAddress(address)
-
-        const ownerAddress = await stationContract.owner()
-        setAdminAddress(ownerAddress)
-
-        await fetchTasks(stationContract, address)
-      } else {
-        throw new Error('Wallet connection failed.')
       }
-    } catch (error) {
-      console.error('Error connecting wallet:', error)
-      setIsWalletConnected(false)
-      setConnectedAddress(null)
-      setAdminAddress(null)
     }
-  }
+
+    checkWalletConnection()
+  }, [])
 
   const fetchTasks = async (contract: ethers.Contract, userAddress: string) => {
     try {
@@ -169,13 +156,6 @@ export default function Home() {
     }
   }
 
-  const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
-    setTasks({
-      ...tasks,
-      [columnId]: tasks[columnId].filter((task) => task.id !== taskId),
-    })
-  }
-
   const handleSaveTask = async (task: { taskContent: string; assignee: string; reward: number }) => {
     if (!contract) {
       setStatusMessage('Please connect your wallet to create a task.')
@@ -198,15 +178,12 @@ export default function Home() {
     }
   }
 
-  const isButtonDisabled = !isWalletConnected || loading
-
   return (
     <>
       <Header
         isWalletConnected={isWalletConnected}
         connectedAddress={connectedAddress}
         onWalletConnect={(address, network) => {
-          console.log('onWalletConnect called with:', address, network)
           setConnectedAddress(address)
           setIsWalletConnected(!!address)
         }}
@@ -236,12 +213,6 @@ export default function Home() {
                                 className="group flex items-center justify-between pt-2 pb-2 pl-3 pr-3 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef]"
                               >
                                 <span>{task.content}</span>
-                                <button
-                                  onClick={() => handleDeleteTask(columnId, task.id)}
-                                  className="text-red-500 transition-opacity opacity-0 hover:opacity-100 group-hover:opacity-100"
-                                >
-                                  ✕
-                                </button>
                               </div>
                             )}
                           </Draggable>
@@ -250,9 +221,9 @@ export default function Home() {
 
                         {columnId === 'todo' && (
                           <button
-                            className={`w-full p-2 mt-2 text-white duration-200 ease-linear bg-black border border-black rounded-lg hover:bg-transparent hover:text-black ${isButtonDisabled ? 'cursor-not-allowed' : ''}`}
+                            className={`w-full p-2 mt-2 text-white bg-black border border-black rounded-lg ${!isWalletConnected ? 'cursor-not-allowed' : ''}`}
                             onClick={() => setIsModalOpen(true)}
-                            disabled={isButtonDisabled}
+                            disabled={!isWalletConnected}
                           >
                             + New Task
                           </button>

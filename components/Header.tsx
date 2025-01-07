@@ -95,14 +95,14 @@ const Header = ({ isWalletConnected, connectedAddress, onWalletConnect }: Header
           <div className="flex items-center space-x-4 text-[14px]">
             {isWalletConnected && connectedAddress ? (
               <div
-                className="flex items-center px-4 py-2 text-white transition-all bg-black border border-black rounded-full cursor-pointer hover:bg-gray-800 hover:shadow-lg"
+                className="text-black cursor-pointer duration-200 ease-linear bg-transparent border border-black rounded-full px-4 py-[6px]"
                 onClick={handleDisconnect}
               >
                 <span className="truncate max-w-[120px]">{shortenAddress(connectedAddress)}</span>
               </div>
             ) : (
               <button
-                className="text-white duration-200 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black px-4 py-[6px]"
+                className="text-white cursor-pointer duration-200 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black px-4 py-[6px]"
                 onClick={handleConnectWallet}
               >
                 Connect
