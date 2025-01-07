@@ -46,14 +46,14 @@ export default function FundModal({ isOpen, onClose, onSubmit, contractAddress }
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.12 }}
         >
           <motion.div
             className="p-6 bg-white border rounded-lg w-96"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.12 }}
           >
             <h2 className="mb-4 text-xl font-bold">Fund Contract</h2>
             <input
