@@ -2,30 +2,34 @@ import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
 import { ethers } from 'ethers'
 import { connectWallet, getStationContract } from '../utils/contractUtils'
-import Popover from '../components/common/Popover'
 import FundModal from '../components/FundModal'
 import { shortenAddress } from '../utils/helpers'
 import { FiLogOut } from 'react-icons/fi'
 
-interface HeaderProps {
-  onConnect: () => Promise<void>
-  isWalletConnected: boolean
-  connectedAddress: string | null
+const CONTRACT_ADDRESSES = {
+  ARBITRUM: '0xc82480693692c443e4d4dc5fa5bC6496A4cac865',
+  SKALE: '0xf350c26f76cdbcef6c9a145040f31bfaa7074171',
 }
 
-const Header = ({ onConnect, isWalletConnected, connectedAddress }: HeaderProps) => {
+interface HeaderProps {
+  isWalletConnected: boolean
+  connectedAddress: string | null
+  onWalletConnect: (address: string | null, network: 'ARBITRUM' | 'SKALE' | null) => void
+}
+
+const Header = ({ isWalletConnected, connectedAddress, onWalletConnect }: HeaderProps) => {
   const { disconnect } = useDisconnect()
 
   const [isFundModalOpen, setIsFundModalOpen] = useState(false)
   const [contractBalance, setContractBalance] = useState<number>(0)
   const [currentNetwork, setCurrentNetwork] = useState<'ARBITRUM' | 'SKALE' | null>(null)
-  const [contractAddress, setContractAddress] = useState<string>('')
 
   const handleDisconnect = () => {
     disconnect()
+    onWalletConnect(null, null)
   }
 
-  const fetchContractDetails = async () => {
+  const handleConnectWallet = async () => {
     try {
       const wallet = await connectWallet()
       if (wallet?.signer) {
@@ -41,25 +45,28 @@ const Header = ({ onConnect, isWalletConnected, connectedAddress }: HeaderProps)
           return
         }
 
-        setContractAddress(contract.address)
-
         const rawBalance = await contract.getBalance()
         const balance = ethers.utils.formatUnits(rawBalance, 6)
         setContractBalance(parseFloat(balance))
+
+        const address = await wallet.signer.getAddress()
+        onWalletConnect(address, networkName)
       }
     } catch (error) {
-      console.error('Error fetching contract details:', error)
+      console.error('Error connecting wallet:', error)
     }
   }
 
   const handleFundSubmit = async (amount: number) => {
     try {
-      console.log(`Funding ${contractAddress} with ${amount} USDC`)
-      fetchContractDetails()
+      console.log(`Funding ${CONTRACT_ADDRESSES[currentNetwork || 'ARBITRUM']} with ${amount} USDC`)
+      await handleConnectWallet()
     } catch (error) {
       console.error('Error during funding:', error)
     }
   }
+
+  const contractAddress = CONTRACT_ADDRESSES[currentNetwork || 'ARBITRUM']
 
   return (
     <header className="fixed inset-x-0 top-0 z-10 bg-white dark:bg-black mx-auto max-w-[800px]">
@@ -84,30 +91,19 @@ const Header = ({ onConnect, isWalletConnected, connectedAddress }: HeaderProps)
               </div>
             </div>
           </button>
+
           <div className="flex items-center space-x-4 text-[14px]">
             {isWalletConnected && connectedAddress ? (
-              <Popover
-                placement="bottom-right"
-                content={
-                  <div
-                    className="flex items-center gap-2 text-red-500 cursor-pointer hover:text-red-600"
-                    onClick={handleDisconnect}
-                  >
-                    Disconnect <FiLogOut />
-                  </div>
-                }
+              <div
+                className="flex items-center px-4 py-2 text-white transition-all bg-black border border-black rounded-full cursor-pointer hover:bg-gray-800 hover:shadow-lg"
+                onClick={handleDisconnect}
               >
-                <div className="flex items-center px-4 py-2 text-white transition-all bg-black border border-black rounded-full cursor-pointer hover:bg-gray-800 hover:shadow-lg">
-                  <span className="truncate max-w-[120px]">{shortenAddress(connectedAddress)}</span>
-                </div>
-              </Popover>
+                <span className="truncate max-w-[120px]">{shortenAddress(connectedAddress)}</span>
+              </div>
             ) : (
               <button
                 className="text-white duration-200 ease-linear bg-black border border-black rounded-full hover:bg-transparent hover:text-black px-4 py-[6px]"
-                onClick={async () => {
-                  await fetchContractDetails()
-                  onConnect()
-                }}
+                onClick={handleConnectWallet}
               >
                 Connect
               </button>

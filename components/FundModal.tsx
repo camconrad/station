@@ -73,7 +73,7 @@ export default function FundModal({ isOpen, onClose, onSubmit, contractAddress }
               </button>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="truncate">Contract: {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}</span>
+              <span className="truncate">Contract: {contractAddress}</span>
               <button
                 onClick={handleCopyAddress}
                 className="flex items-center space-x-1 text-blue-500 hover:text-blue-700"
