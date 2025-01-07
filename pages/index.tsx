@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import {
   getStationContract,
-  createTaskOnContract,
   startTaskOnContract,
   completeTaskOnContract,
 } from '../utils/contractUtils'
@@ -152,18 +151,27 @@ export default function Home() {
       return
     }
     const { taskContent, assignee, reward } = task
-    const rewardInSmallestUnit = ethers.BigNumber.from(reward.toString())
+    const rewardInSmallestUnit = ethers.utils.parseUnits(reward.toString(), 6)
     setLoading(true)
     setStatusMessage('Creating task...')
     try {
-      await createTaskOnContract(contract, taskContent, assignee, rewardInSmallestUnit)
+      const tx = await contract.createTask(taskContent, assignee, rewardInSmallestUnit)
+      await tx.wait()
       setStatusMessage('Task created successfully!')
       await fetchTasks(contract, connectedAddress || '')
     } catch (error) {
+      console.error('Error creating task:', error)
       setStatusMessage('Failed to create task.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleDeleteTask = (columnId: keyof TasksState, taskId: string) => {
+    setTasks({
+      ...tasks,
+      [columnId]: tasks[columnId].filter((task) => task.id !== taskId),
+    })
   }
 
   return (
@@ -195,9 +203,15 @@ export default function Home() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="group flex items-center justify-between pt-2 pb-2 pl-3 pr-3 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef]"
+                                className="group flex items-center justify-between pt-2 pb-2 pl-3 pr-3 mb-2 bg-white rounded-lg shadow-lg border border-[#efefef] relative"
                               >
                                 <span>{task.content}</span>
+                                <button
+                                  onClick={() => handleDeleteTask(columnId, task.id)}
+                                  className="absolute text-red-500 transition-opacity transform -translate-y-1/2 opacity-0 top-1/2 right-2 group-hover:opacity-100"
+                                >
+                                  ✕
+                                </button>
                               </div>
                             )}
                           </Draggable>
