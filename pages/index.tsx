@@ -44,7 +44,6 @@ export default function Home() {
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
 
-  // Effect to check if the wallet is already connected
   useEffect(() => {
     const checkWalletConnection = async () => {
       const { ethereum } = window as any
@@ -55,7 +54,6 @@ export default function Home() {
           const provider = new ethers.providers.Web3Provider(ethereum)
           const network = await provider.getNetwork()
           const networkName = chainIdToNetwork[network.chainId]
-
           if (networkName) {
             const signer = provider.getSigner()
             const stationContract = getStationContract(signer, networkName)
@@ -67,7 +65,6 @@ export default function Home() {
         }
       }
     }
-
     checkWalletConnection()
   }, [])
 
@@ -75,7 +72,6 @@ export default function Home() {
     try {
       const totalTasks = await contract.taskCount()
       const fetchedTasks: TasksState = { todo: [], doing: [], done: [] }
-
       for (let i = 0; i < totalTasks; i++) {
         const task = await contract.tasks(i)
         const taskData: Task = {
@@ -85,7 +81,6 @@ export default function Home() {
           creator: task.creator,
           reward: task.reward,
         }
-
         if (
           task.assignee.toLowerCase() === userAddress.toLowerCase() ||
           task.creator.toLowerCase() === userAddress.toLowerCase()
@@ -95,7 +90,6 @@ export default function Home() {
           else if (task.status === 2) fetchedTasks.done.push(taskData)
         }
       }
-
       setTasks(fetchedTasks)
     } catch (error) {
       console.error('Error fetching tasks:', error)
@@ -105,18 +99,15 @@ export default function Home() {
   const onDragEnd = async (result: DropResult) => {
     const { source, destination } = result
     if (!destination) return
-
     const sourceColumn = tasks[source.droppableId as keyof TasksState]
     const destColumn = tasks[destination.droppableId as keyof TasksState]
     const [removed] = sourceColumn.splice(source.index, 1)
     destColumn.splice(destination.index, 0, removed)
-
     setTasks({
       ...tasks,
       [source.droppableId]: sourceColumn,
       [destination.droppableId]: destColumn,
     })
-
     if (destination.droppableId === 'doing' && contract) {
       setLoading(true)
       setStatusMessage('Starting the task...')
@@ -129,7 +120,6 @@ export default function Home() {
         setLoading(false)
       }
     }
-
     if (destination.droppableId === 'done' && contract) {
       setLoading(true)
       setStatusMessage('Completing the task...')
@@ -138,11 +128,9 @@ export default function Home() {
           const provider = contract.provider as ethers.providers.Web3Provider
           const network = await provider.getNetwork()
           const networkName = chainIdToNetwork[network.chainId]
-
           if (!networkName) {
             throw new Error(`Unsupported chainId: ${network.chainId}`)
           }
-
           await completeTaskOnContract(contract, parseInt(removed.id, 10), networkName)
           setStatusMessage('Task marked as complete!')
         } else {
@@ -161,12 +149,10 @@ export default function Home() {
       setStatusMessage('Please connect your wallet to create a task.')
       return
     }
-
     const { taskContent, assignee, reward } = task
     const rewardInSmallestUnit = ethers.BigNumber.from(reward.toString())
     setLoading(true)
     setStatusMessage('Creating task...')
-
     try {
       await createTaskOnContract(contract, taskContent, assignee, rewardInSmallestUnit)
       setStatusMessage('Task created successfully!')
@@ -190,16 +176,13 @@ export default function Home() {
       />
       <div className="relative mt-16 container pt-4 pb-4 mx-auto max-w-[800px] px-3 md:px-0">
         {loading && statusMessage && <div className="mb-4 text-center text-blue-500">{statusMessage}</div>}
-
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {['To Do', 'Doing', 'Done'].map((columnTitle, index) => {
               const columnId = ['todo', 'doing', 'done'][index] as keyof TasksState
-
               return (
                 <div key={columnId}>
                   <h2 className="mb-2 text-lg font-bold capitalize">{columnTitle}</h2>
-
                   <Droppable droppableId={columnId}>
                     {(provided) => (
                       <div {...provided.droppableProps} ref={provided.innerRef} className="h-auto">
@@ -218,10 +201,11 @@ export default function Home() {
                           </Draggable>
                         ))}
                         {provided.placeholder}
-
                         {columnId === 'todo' && (
                           <button
-                            className={`w-full p-2 mt-2 text-white bg-black border border-black rounded-lg hover:bg-black/0 duration-100 ease-linear transition-ease hover:text-black ${!isWalletConnected ? 'cursor-not-allowed' : ''}`}
+                            className={`w-full p-2 mt-2 text-white bg-black border border-black rounded-lg hover:bg-black/0 duration-100 ease-linear transition-ease hover:text-black ${
+                              !isWalletConnected ? 'cursor-not-allowed' : ''
+                            }`}
                             onClick={() => setIsModalOpen(true)}
                             disabled={!isWalletConnected}
                           >
@@ -237,7 +221,6 @@ export default function Home() {
           </div>
         </DragDropContext>
       </div>
-
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
