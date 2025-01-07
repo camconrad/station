@@ -31,19 +31,18 @@ const initialTasks: TasksState = {
   done: [],
 }
 
-// Map chainId to network names
 const chainIdToNetwork: Record<number, 'ARBITRUM' | 'SKALE'> = {
-  42161: 'ARBITRUM', // Arbitrum chainId
-  974399131: 'SKALE', // Skale testnet chainId
+  42161: 'ARBITRUM',
+  974399131: 'SKALE',
 }
 
 export default function Home() {
   const [tasks, setTasks] = useState<TasksState>(initialTasks)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [contract, setContract] = useState<ethers.Contract | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [statusMessage, setStatusMessage] = useState<string>('')
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false)
+  const [loading, setLoading] = useState(false)
+  const [statusMessage, setStatusMessage] = useState('')
+  const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
   const [adminAddress, setAdminAddress] = useState<string | null>(null)
 
@@ -81,6 +80,7 @@ export default function Home() {
       console.error('Error connecting wallet:', error)
       setIsWalletConnected(false)
       setConnectedAddress(null)
+      setAdminAddress(null)
     }
   }
 
@@ -110,7 +110,6 @@ export default function Home() {
       }
 
       setTasks(fetchedTasks)
-      console.log('Tasks fetched:', fetchedTasks)
     } catch (error) {
       console.error('Error fetching tasks:', error)
     }
@@ -139,7 +138,6 @@ export default function Home() {
         setStatusMessage('Task moved to Doing!')
       } catch (error) {
         setStatusMessage('Failed to move task to Doing.')
-        console.error('Error starting task:', error)
       } finally {
         setLoading(false)
       }
@@ -165,7 +163,6 @@ export default function Home() {
         }
       } catch (error) {
         setStatusMessage('Failed to complete the task.')
-        console.error('Error completing task:', error)
       } finally {
         setLoading(false)
       }
@@ -196,7 +193,6 @@ export default function Home() {
       await fetchTasks(contract, connectedAddress || '')
     } catch (error) {
       setStatusMessage('Failed to create task.')
-      console.error('Error creating task:', error)
     } finally {
       setLoading(false)
     }
@@ -207,9 +203,12 @@ export default function Home() {
   return (
     <>
       <Header
-        onConnect={connectUserWallet}
         isWalletConnected={isWalletConnected}
         connectedAddress={connectedAddress}
+        onWalletConnect={(address, network) => {
+          setConnectedAddress(address)
+          setIsWalletConnected(!!address)
+        }}
       />
       <div className="relative mt-16 container pt-4 pb-4 mx-auto max-w-[800px] px-3 md:px-0">
         {loading && statusMessage && <div className="mb-4 text-center text-blue-500">{statusMessage}</div>}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { FiCopy } from 'react-icons/fi'
 import { motion, AnimatePresence } from 'framer-motion'
+import { shortenAddress } from '../utils/helpers'
 
 interface FundModalProps {
   isOpen: boolean
@@ -73,7 +74,7 @@ export default function FundModal({ isOpen, onClose, onSubmit, contractAddress }
               </button>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="truncate">Contract: {contractAddress}</span>
+              <span className="truncate">Contract: {shortenAddress(contractAddress)}</span>
               <button
                 onClick={handleCopyAddress}
                 className="flex items-center space-x-1 text-blue-500 hover:text-blue-700"
