@@ -70,7 +70,7 @@ const Header = ({ isWalletConnected, connectedAddress, onWalletConnect }: Header
   const contractAddress = CONTRACT_ADDRESSES[currentNetwork || 'ARBITRUM']
 
   return (
-    <header className="fixed inset-x-0 top-0 z-10 bg-white dark:bg-black mx-auto max-w-[800px]">
+    <header className="fixed inset-x-0 top-0 z-10 bg-white mx-auto max-w-[800px]">
       <div className="container flex items-center justify-between px-3 pt-4 pb-4 mx-auto md:px-0">
         <div className="flex items-center">
           <img
